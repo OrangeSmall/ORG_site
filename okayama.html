@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岡山五日行程一覽表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .schedule-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .schedule-table td {
+            padding: 12px 10px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+        
+        .schedule-table tbody tr:nth-child(odd) {
+            background: #f8f9fa;
+        }
+        
+        .schedule-table tbody tr:hover {
+            background: #e3f2fd;
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .day-cell {
+            background: linear-gradient(45deg, #FF9A9E, #FECFEF);
+            font-weight: bold;
+            text-align: center;
+            color: #2c3e50;
+            font-size: 13px;
+            min-width: 100px;
+        }
+        
+        .location-cell {
+            font-weight: bold;
+            color: #2c3e50;
+            background: #fff3cd;
+            min-width: 140px;
+        }
+        
+        .activity-cell {
+            max-width: 300px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .time-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #495057;
+            background: #d1ecf1;
+            min-width: 120px;
+        }
+        
+        .duration-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #28a745;
+            background: #d4edda;
+            min-width: 100px;
+        }
+        
+        .cost-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #dc3545;
+            background: #f8d7da;
+            min-width: 120px;
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #FFE066, #FF6B6B);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .activity-item {
+            margin: 3px 0;
+            padding: 2px 0;
+        }
+        
+        .activity-item:before {
+            content: "▶ ";
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+        
+        .summary-card {
+            margin: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .summary-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .schedule-table {
+                font-size: 12px;
+            }
+            
+            .schedule-table th,
+            .schedule-table td {
+                padding: 8px 6px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .summary-stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏯 岡山五日行程總覽</h1>
+            <p>9月15日-19日 | 歷史文化 × 都市購物 雙方案選擇</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('plan-a')">🏛️ A方案：歷史文化導向</button>
+            <button class="tab-button" onclick="showTab('plan-b')">🏙️ B方案：都市文化混合</button>
+        </div>
+        
+        <div id="plan-a" class="tab-content active">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>主要地點</th>
+                        <th>詳細行程</th>
+                        <th>移動時間</th>
+                        <th>停留時間</th>
+                        <th>預估費用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="day-cell">Day 1<br>9/15(日)</td>
+                        <td class="location-cell">🏮 倉敷美觀地區</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">14:00 抵達岡山機場取車</div>
+                            <div class="activity-item">16:30 倉敷川白璧老街散策</div>
+                            <div class="activity-item">17:30 大原美術館外觀巡禮</div>
+                            <div class="activity-item">18:00 星野集團文創設施參觀</div>
+                            <div class="activity-item">19:00 運河遊船體驗</div>
+                            <div class="activity-item">20:00 倉敷在地料理晚餐</div>
+                        </td>
+                        <td class="time-cell">機場→倉敷<br>約1小時</td>
+                        <td class="duration-cell">散策3小時<br>晚餐1.5小時</td>
+                        <td class="cost-cell">¥2,000-3,000/人<br>+租車¥10,000/日<br>+運河船¥500</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 2<br>9/16(一)</td>
+                        <td class="location-cell">🏯 備中松山城</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">09:00 倉敷美術館群參觀</div>
+                            <div class="activity-item">11:30 自駕前往高梁市</div>
+                            <div class="activity-item">13:30 登山巴士至登山口</div>
+                            <div class="activity-item">14:00 徒步登城(20-30分)</div>
+                            <div class="activity-item">15:00 <span class="highlight">天空之城</span>參觀</div>
+                            <div class="activity-item">16:30 雲海展望台絕景</div>
+                        </td>
+                        <td class="time-cell">倉敷→高梁<br>約1小時</td>
+                        <td class="duration-cell">美術館2小時<br>登城3小時</td>
+                        <td class="cost-cell">城門票¥500<br>美術館¥1,500<br>餐費¥2,000</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 3<br>9/17(二)</td>
+                        <td class="location-cell">🌸 後樂園·吉備津神社</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">09:30 返回岡山市區</div>
+                            <div class="activity-item">10:00 <span class="highlight">後樂園</span>(日本三大名園)</div>
+                            <div class="activity-item">11:00 烏城岡山城登城</div>
+                            <div class="activity-item">12:30 岡山名物散壽司午餐</div>
+                            <div class="activity-item">14:00 吉備津神社398m迴廊</div>
+                            <div class="activity-item">15:30 桃太郎傳說發源地巡禮</div>
+                            <div class="activity-item">16:30 吉備津彥神社參拜</div>
+                        </td>
+                        <td class="time-cell">高梁→岡山<br>約1.5小時<br>市內20分</td>
+                        <td class="duration-cell">後樂園2小時<br>神社參拜3小時</td>
+                        <td class="cost-cell">聯票¥580<br>御朱印¥300<br>午餐¥2,000</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 4<br>9/18(三)</td>
+                        <td class="location-cell">🛍️ Outlet·湯鄉溫泉</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">10:30 三井Outlet倉敷(120店舖)</div>
+                            <div class="activity-item">14:00 AEON MALL岡山</div>
+                            <div class="activity-item">15:30 表町商店街在地品牌</div>
+                            <div class="activity-item">17:00 前往湯鄉溫泉</div>
+                            <div class="activity-item">18:30 溫泉旅館會席料理</div>
+                            <div class="activity-item">20:00 <span class="highlight">溫泉泡湯</span>放鬆</div>
+                        </td>
+                        <td class="time-cell">溫泉→購物區<br>約1.5小時</td>
+                        <td class="duration-cell">購物4小時<br>溫泉3小時</td>
+                        <td class="cost-cell">購物¥20,000-50,000<br>溫泉住宿¥20,000/人</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 5<br>9/19(四)</td>
+                        <td class="location-cell">🍱 市場早餐·機場</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">08:00 岡山中央市場海鮮丼</div>
+                            <div class="activity-item">09:30 最後伴手禮採購</div>
+                            <div class="activity-item">10:30 前往機場還車</div>
+                            <div class="activity-item">11:30 辦理登機手續</div>
+                            <div class="activity-item">12:30 機場免稅店</div>
+                            <div class="activity-item">14:00 預計起飛返台</div>
+                        </td>
+                        <td class="time-cell">市區→機場<br>約30分鐘</td>
+                        <td class="duration-cell">早餐1小時<br>機場2小時</td>
+                        <td class="cost-cell">早餐¥1,200<br>還車¥1,000<br>免稅¥5,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="plan-b" class="tab-content">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>主要地點</th>
+                        <th>詳細行程</th>
+                        <th>移動時間</th>
+                        <th>停留時間</th>
+                        <th>預估費用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="day-cell">Day 1<br>9/15(日)</td>
+                        <td class="location-cell">🏬 AEON購物中心</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">14:00 抵達岡山機場</div>
+                            <div class="activity-item">15:00 機場巴士至岡山站</div>
+                            <div class="activity-item">16:00 AEON MALL岡山(300店舖)</div>
+                            <div class="activity-item">17:30 屋頂花園岡山市景</div>
+                            <div class="activity-item">19:00 岡山站前居酒屋晚餐</div>
+                            <div class="activity-item">20:30 夜遊天滿屋百貨商圈</div>
+                        </td>
+                        <td class="time-cell">機場→市區<br>巴士30分</td>
+                        <td class="duration-cell">購物3小時<br>晚餐2小時</td>
+                        <td class="cost-cell">巴士¥760<br>晚餐¥2,500<br>購物自由</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 2<br>9/16(一)</td>
+                        <td class="location-cell">🏰 後樂園·問屋町</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">09:00 <span class="highlight">後樂園</span>清晨漫步</div>
+                            <div class="activity-item">10:30 岡山城登城眺望</div>
+                            <div class="activity-item">12:00 城下町午餐</div>
+                            <div class="activity-item">14:00 問屋町文創街區</div>
+                            <div class="activity-item">15:00 手織工房體驗</div>
+                            <div class="activity-item">16:00 表町商店街購物</div>
+                            <div class="activity-item">18:00 文青咖啡廳晚餐</div>
+                        </td>
+                        <td class="time-cell">市區內<br>步行20分</td>
+                        <td class="duration-cell">景點3小時<br>購物3小時</td>
+                        <td class="cost-cell">聯票¥580<br>手作¥2,500<br>餐費¥2,000</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 3<br>9/17(二)</td>
+                        <td class="location-cell">🎨 倉敷懷舊風情</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">09:30 JR前往倉敷</div>
+                            <div class="activity-item">10:00 倉敷川白璧街道</div>
+                            <div class="activity-item">11:00 阿智神社俯瞰美觀地區</div>
+                            <div class="activity-item">12:30 町家改裝餐廳午餐</div>
+                            <div class="activity-item">14:00 <span class="highlight">大原美術館</span>巡禮</div>
+                            <div class="activity-item">15:30 世界第一古蹟星巴克</div>
+                            <div class="activity-item">16:30 倉敷川遊船體驗</div>
+                        </td>
+                        <td class="time-cell">岡山→倉敷<br>JR 40分</td>
+                        <td class="duration-cell">散策4小時<br>美術館2小時</td>
+                        <td class="cost-cell">JR¥680來回<br>美術館¥1,500<br>餐費¥2,000</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 4<br>9/18(三)</td>
+                        <td class="location-cell">🌊 Outlet·瀨戶內海</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">09:40 租車前往倉敷Outlet</div>
+                            <div class="activity-item">10:00 三井Outlet血拼購物</div>
+                            <div class="activity-item">13:30 自駕前往牛窗海岸</div>
+                            <div class="activity-item">14:30 <span class="highlight">瀨戶內海</span>絕景</div>
+                            <div class="activity-item">16:00 海岸咖啡廳下午茶</div>
+                            <div class="activity-item">17:30 鷲羽山夕陽展望台</div>
+                            <div class="activity-item">19:00 海邊溫泉酒店</div>
+                        </td>
+                        <td class="time-cell">倉敷→牛窗<br>約1小時</td>
+                        <td class="duration-cell">購物3小時<br>海景3小時</td>
+                        <td class="cost-cell">租車¥8,000<br>購物¥20,000<br>海邊住宿¥25,000</td>
+                    </tr>
+                    <tr>
+                        <td class="day-cell">Day 5<br>9/19(四)</td>
+                        <td class="location-cell">🌅 海景早餐·返程</td>
+                        <td class="activity-cell">
+                            <div class="activity-item">07:30 <span class="highlight">海景咖啡廳</span>早餐</div>
+                            <div class="activity-item">08:30 瀨戶內海日出(天氣許可)</div>
+                            <div class="activity-item">09:30 前往機場還車</div>
+                            <div class="activity-item">11:30 機場免稅店採購</div>
+                            <div class="activity-item">12:30 辦理登機手續</div>
+                            <div class="activity-item">14:00 預計起飛返台</div>
+                        </td>
+                        <td class="time-cell">牛窗→機場<br>約1.5小時</td>
+                        <td class="duration-cell">早餐1.5小時<br>機場2小時</td>
+                        <td class="cost-cell">早餐¥1,200<br>油費¥2,000<br>免稅¥8,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="summary-card">
+            <h3>💰 費用總覽 & 重要提醒</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="stat-number">¥45,000-65,000</span>
+                    <div class="stat-label">A方案 每人預算</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">¥40,000-60,000</span>
+                    <div class="stat-label">B方案 每人預算</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5天4夜</span>
+                    <div class="stat-label">完整行程</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">租車必備</span>
+                    <div class="stat-label">國際駕照</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabId) {
+            // 隱藏所有標籤內容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有按鈕的 active 樣式
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 顯示選中的標籤內容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 添加按鈕 active 樣式
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
