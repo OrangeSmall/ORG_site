@@ -129,6 +129,21 @@
             box-shadow: 0 4px 12px rgba(255,152,0,0.3);
         }
         
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #5bc0de);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(23,162,184,0.3);
+        }
+        
+        .btn:disabled {
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+        
         .table-container {
             padding: 0 30px 30px;
             overflow-x: auto;
@@ -294,6 +309,24 @@
             justify-content: flex-end;
             margin-top: 20px;
         }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            max-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -371,6 +404,10 @@
                 <button class="btn btn-success" id="exportBtn">
                     📊 匯出 Excel
                 </button>
+                
+                <button class="btn btn-info" id="refreshBtn">
+                    🔄 重新整理
+                </button>
             </div>
         </div>
         
@@ -427,101 +464,15 @@
     
     console.log("開始載入JavaScript");
     
+    // Google Apps Script Web 應用程式 URL
+    var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzCWBxMH1h1af3FcpjtF2_Q15Mjq4slONwliSU6TNz51Z0lkX8lUXpS5XRTWYGhmeBkAg/exec';
+    
     // 全域變數
-    var records = [
-        {
-            id: 1,
-            executionItem: '海水更換',
-            changeDate: '2025-07-02',
-            operator: '林尚正',
-            department: '第四處',
-            poolType: '常溫池',
-            volume: 500,
-            cost: 1500,
-            remarks: '定期更換'
-        },
-        {
-            id: 2,
-            executionItem: '水池維修',
-            changeDate: '2025-06-15',
-            operator: '陳美華',
-            department: '第二處',
-            poolType: '中溫池',
-            volume: 750,
-            cost: 2250,
-            remarks: '更換過濾器'
-        },
-        {
-            id: 3,
-            executionItem: '活體進貨',
-            changeDate: '2025-05-20',
-            operator: '王志明',
-            department: '第一處',
-            poolType: '低溫池',
-            volume: 300,
-            cost: 900,
-            remarks: '購入20隻龍蝦'
-        },
-        {
-            id: 4,
-            executionItem: '活體死傷',
-            changeDate: '2025-07-15',
-            operator: '李小美',
-            department: '第二處',
-            poolType: '常溫池',
-            volume: 0,
-            cost: 150,
-            remarks: '魚隻死亡損失'
-        },
-        {
-            id: 5,
-            executionItem: '海水更換',
-            changeDate: '2025-01-10',
-            operator: '張大明',
-            department: '第一處',
-            poolType: '中溫池',
-            volume: 600,
-            cost: 1800,
-            remarks: '年度大換水'
-        },
-        {
-            id: 6,
-            executionItem: '水池維修',
-            changeDate: '2024-12-05',
-            operator: '劉小芳',
-            department: '第四處',
-            poolType: '低溫池',
-            volume: 400,
-            cost: 3200,
-            remarks: '管路維修'
-        },
-        {
-            id: 7,
-            executionItem: '活體進貨',
-            changeDate: '2024-11-20',
-            operator: '吳志強',
-            department: '第二處',
-            poolType: '常溫池',
-            volume: 200,
-            cost: 1200,
-            remarks: '進口石斑魚'
-        },
-        {
-            id: 8,
-            executionItem: '活體死傷',
-            changeDate: '2024-10-15',
-            operator: '黃美玲',
-            department: '第一處',
-            poolType: '中溫池',
-            volume: 0,
-            cost: 300,
-            remarks: '溫度異常死亡'
-        }
-    ];
+    var records = [];
+    var nextId = 1;
+    var isLoading = false;
 
-    var nextId = 9;
-
-    console.log("初始化資料，records長度:", records.length);
+    console.log("Google Script URL:", GOOGLE_SCRIPT_URL);
 
     // 工具函數
     function formatDate(dateString) {
@@ -545,6 +496,168 @@
             console.error("計算間隔天數錯誤:", error);
             return 0;
         }
+    }
+
+    // Google Sheets 相關函數
+    function loadRecordsFromSheet() {
+        console.log("開始從 Google Sheet 載入資料");
+        showLoading(true);
+        showNotification('⏳ 從雲端載入資料中...', 'info');
+        
+        fetch(GOOGLE_SCRIPT_URL + '?action=getRecords', {
+            method: 'GET',
+            mode: 'cors'
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('網路回應異常: ' + response.status);
+            }
+            return response.text();
+        })
+        .then(function(text) {
+            console.log("收到回應:", text);
+            var data = JSON.parse(text);
+            records = data || [];
+            
+            // 計算下一個ID
+            if (records.length > 0) {
+                var maxId = Math.max.apply(Math, records.map(function(r) { return parseInt(r.id) || 0; }));
+                nextId = maxId + 1;
+            }
+            
+            console.log("載入了", records.length, "筆記錄，下個ID:", nextId);
+            renderTable();
+            updateStats();
+            showLoading(false);
+            showNotification('✅ 資料載入成功 (' + records.length + ' 筆)', 'success');
+        })
+        .catch(function(error) {
+            console.error("載入資料失敗:", error);
+            showLoading(false);
+            showNotification('❌ 載入失敗，使用本地測試資料', 'warning');
+            
+            // 載入失敗時使用本地測試資料
+            loadTestData();
+        });
+    }
+
+    function saveRecordToSheet(record) {
+        console.log("保存記錄到 Google Sheet:", record);
+        
+        var payload = {
+            action: 'addRecord',
+            id: record.id,
+            executionItem: record.executionItem,
+            changeDate: record.changeDate,
+            operator: record.operator,
+            department: record.department,
+            poolType: record.poolType,
+            volume: record.volume,
+            cost: record.cost,
+            remarks: record.remarks
+        };
+
+        return fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(text) {
+            console.log("保存回應:", text);
+            var result = JSON.parse(text);
+            
+            if (result.success) {
+                showNotification('✅ 記錄已保存到雲端', 'success');
+            } else {
+                throw new Error('保存失敗');
+            }
+        })
+        .catch(function(error) {
+            console.error("保存記錄失敗:", error);
+            showNotification('❌ 雲端保存失敗，請稍後重試', 'error');
+            throw error;
+        });
+    }
+
+    function deleteRecordFromSheet(recordId) {
+        console.log("從 Google Sheet 刪除記錄:", recordId);
+        
+        var payload = {
+            action: 'deleteRecord',
+            id: recordId
+        };
+
+        return fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(text) {
+            console.log("刪除回應:", text);
+            var result = JSON.parse(text);
+            
+            if (result.success) {
+                showNotification('✅ 記錄已從雲端刪除', 'success');
+            } else {
+                throw new Error('刪除失敗');
+            }
+        })
+        .catch(function(error) {
+            console.error("刪除記錄失敗:", error);
+            showNotification('❌ 雲端刪除失敗', 'error');
+            throw error;
+        });
+    }
+
+    function showLoading(show) {
+        isLoading = show;
+        var buttons = document.querySelectorAll('.btn');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = show;
+        }
+    }
+
+    function loadTestData() {
+        console.log("載入測試資料");
+        records = [
+            {
+                id: 1,
+                executionItem: '海水更換',
+                changeDate: '2025-07-02',
+                operator: '林尚正',
+                department: '第四處',
+                poolType: '常溫池',
+                volume: 500,
+                cost: 1500,
+                remarks: '定期更換'
+            },
+            {
+                id: 2,
+                executionItem: '水池維修',
+                changeDate: '2025-06-15',
+                operator: '陳美華',
+                department: '第二處',
+                poolType: '中溫池',
+                volume: 750,
+                cost: 2250,
+                remarks: '更換過濾器'
+            }
+        ];
+        nextId = 3;
+        renderTable();
+        updateStats();
     }
 
     // 主要功能函數
@@ -611,7 +724,7 @@
                     return record.executionItem === '海水更換' || record.executionItem === '水池維修'; 
                 })
                 .reduce(function(sum, record) { 
-                    return sum + (record.cost || 0); 
+                    return sum + (parseInt(record.cost) || 0); 
                 }, 0);
             
             // 計算活體進貨費用
@@ -620,7 +733,7 @@
                     return record.executionItem === '活體進貨'; 
                 })
                 .reduce(function(sum, record) { 
-                    return sum + (record.cost || 0); 
+                    return sum + (parseInt(record.cost) || 0); 
                 }, 0);
             
             // 計算活體死傷支出
@@ -629,7 +742,7 @@
                     return record.executionItem === '活體死傷'; 
                 })
                 .reduce(function(sum, record) { 
-                    return sum + (record.cost || 0); 
+                    return sum + (parseInt(record.cost) || 0); 
                 }, 0);
             
             console.log("計算的統計數據:", { totalRecords: totalRecords, totalCost: totalCost, livestockCost: livestockCost, casualtyCost: casualtyCost });
@@ -653,6 +766,11 @@
 
     function addRecord() {
         console.log("addRecord 函數被調用");
+        
+        if (isLoading) {
+            showNotification('⏳ 請等待前一個操作完成', 'warning');
+            return;
+        }
         
         try {
             var executionItem = document.getElementById('executionItem').value;
@@ -685,32 +803,51 @@
             
             console.log("新紀錄:", newRecord);
             
+            // 先加到本地陣列
             records.unshift(newRecord);
-            console.log("新增後records長度:", records.length);
-            
             renderTable();
             updateStats();
             
-            // 清空表單
-            document.getElementById('executionItem').value = '海水更換';
-            document.getElementById('changeDate').value = '';
-            document.getElementById('operator').value = '';
-            document.getElementById('volume').value = '';
-            document.getElementById('cost').value = '';
-            document.getElementById('remarks').value = '';
+            // 顯示本地新增成功
+            showNotification('✅ 本地新增成功，正在同步到雲端...', 'info');
             
-            showNotification('✅ 紀錄已新增成功！', 'success');
+            // 然後保存到 Google Sheets
+            showLoading(true);
+            saveRecordToSheet(newRecord).then(function() {
+                // 清空表單
+                document.getElementById('executionItem').value = '海水更換';
+                document.getElementById('changeDate').value = '';
+                document.getElementById('operator').value = '';
+                document.getElementById('volume').value = '';
+                document.getElementById('cost').value = '';
+                document.getElementById('remarks').value = '';
+                showLoading(false);
+            }).catch(function() {
+                // 如果保存失敗，從本地陣列移除
+                records = records.filter(function(r) { return r.id !== newRecord.id; });
+                renderTable();
+                updateStats();
+                showLoading(false);
+            });
+            
             console.log("addRecord 完成");
         } catch (error) {
             console.error("新增紀錄時發生錯誤:", error);
+            showLoading(false);
             alert('新增失敗，請稍後再試');
         }
     }
 
     function editRecord(id) {
         console.log("編輯紀錄ID:", id);
+        
+        if (isLoading) {
+            showNotification('⏳ 請等待前一個操作完成', 'warning');
+            return;
+        }
+        
         try {
-            var record = records.find(function(r) { return r.id === id; });
+            var record = records.find(function(r) { return r.id == id; });
             if (!record) return;
             
             document.getElementById('executionItem').value = record.executionItem;
@@ -730,36 +867,59 @@
     }
 
     function deleteRecord(id, showConfirm) {
-        if (showConfirm !== false && !confirm('確定要刪除這筆紀錄嗎？')) {
+        if (isLoading) {
+            showNotification('⏳ 請等待前一個操作完成', 'warning');
+            return;
+        }
+        
+        if (showConfirm !== false && !confirm('確定要刪除這筆紀錄嗎？這將從雲端永久刪除！')) {
             return;
         }
         
         try {
-            records = records.filter(function(record) { return record.id !== id; });
+            // 先從本地陣列移除
+            var originalRecords = records.slice();
+            records = records.filter(function(record) { return record.id != id; });
             renderTable();
             updateStats();
             
+            // 如果不是編輯模式，才從 Google Sheets 刪除
             if (showConfirm !== false) {
-                showNotification('🗑️ 紀錄已刪除', 'warning');
+                showLoading(true);
+                deleteRecordFromSheet(id).catch(function() {
+                    // 如果刪除失敗，恢復本地陣列
+                    records = originalRecords;
+                    renderTable();
+                    updateStats();
+                }).finally(function() {
+                    showLoading(false);
+                });
             }
         } catch (error) {
             console.error("刪除紀錄時發生錯誤:", error);
+            showLoading(false);
         }
+    }
+
+    function refreshData() {
+        console.log("手動重新整理資料");
+        if (isLoading) {
+            showNotification('⏳ 請等待前一個操作完成', 'warning');
+            return;
+        }
+        loadRecordsFromSheet();
     }
 
     function showNotification(message, type) {
         try {
+            // 移除舊的通知
+            var oldNotifications = document.querySelectorAll('.notification');
+            for (var i = 0; i < oldNotifications.length; i++) {
+                oldNotifications[i].remove();
+            }
+            
             var notification = document.createElement('div');
-            notification.style.cssText = 
-                'position: fixed;' +
-                'top: 20px;' +
-                'right: 20px;' +
-                'padding: 12px 20px;' +
-                'border-radius: 6px;' +
-                'color: white;' +
-                'font-weight: 600;' +
-                'z-index: 1000;' +
-                'max-width: 300px;';
+            notification.className = 'notification';
             
             var colors = {
                 success: '#4caf50',
@@ -773,11 +933,14 @@
             
             document.body.appendChild(notification);
             
-            setTimeout(function() {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
+            // 如果不是載入訊息，3秒後自動移除
+            if (type !== 'info' || !message.includes('處理中')) {
+                setTimeout(function() {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
         } catch (error) {
             console.error("顯示通知時發生錯誤:", error);
         }
@@ -832,50 +995,6 @@
         }
     }
 
-    // 頁面載入完成後的初始化
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log("DOMContentLoaded 事件觸發");
-        console.log("當前records:", records);
-        
-        try {
-            // 設置預設日期
-            var today = new Date().toISOString().split('T')[0];
-            var changeDateEl = document.getElementById('changeDate');
-            
-            if (changeDateEl) changeDateEl.value = today;
-            
-            if (addBtn) {
-                addBtn.addEventListener('click', addRecord);
-                console.log("新增按鈕事件已綁定");
-            } else {
-                console.error("找不到新增按鈕");
-            }
-            
-            if (clearBtn) {
-                clearBtn.addEventListener('click', showClearModal);
-                console.log("清除按鈕事件已綁定");
-            } else {
-                console.error("找不到清除按鈕");
-            }
-            
-            if (exportBtn) {
-                exportBtn.addEventListener('click', exportToExcel);
-                console.log("匯出按鈕事件已綁定");
-            } else {
-                console.error("找不到匯出按鈕");
-            }
-            
-            // 初始渲染
-            console.log("開始初始渲染");
-            renderTable();
-            updateStats();
-            
-            console.log("初始化完成");
-        } catch (error) {
-            console.error("初始化時發生錯誤:", error);
-        }
-    });
-
     function showClearModal() {
         try {
             var modal = document.createElement('div');
@@ -885,6 +1004,7 @@
                     '<div class="modal-title">' +
                         '🗑️ 清除舊資料' +
                     '</div>' +
+                    '<p><strong>⚠️ 注意：這將從 Google Sheets 中永久刪除資料！</strong></p>' +
                     '<p>請選擇要清除的資料範圍：</p>' +
                     '<div class="modal-options">' +
                         '<label class="option-item">' +
@@ -940,6 +1060,11 @@
     }
 
     function executeClear() {
+        if (isLoading) {
+            showNotification('⏳ 請等待前一個操作完成', 'warning');
+            return;
+        }
+        
         try {
             var selectedOption = document.querySelector('input[name="clearPeriod"]:checked');
             if (!selectedOption) {
@@ -951,21 +1076,24 @@
             var cutoffDate;
             var confirmMessage;
             var itemsToRemove = 0;
+            var recordsToDelete = [];
             
             if (clearValue === 'all') {
-                confirmMessage = '確定要清除全部資料嗎？此操作無法復原！';
+                confirmMessage = '確定要清除全部資料嗎？\n這將從 Google Sheets 中永久刪除所有記錄！\n此操作無法復原！';
                 itemsToRemove = records.length;
+                recordsToDelete = records.slice();
             } else {
                 var months = parseInt(clearValue);
                 cutoffDate = new Date();
                 cutoffDate.setMonth(cutoffDate.getMonth() - months);
                 
-                itemsToRemove = records.filter(function(record) {
+                recordsToDelete = records.filter(function(record) {
                     var recordDate = new Date(record.changeDate);
                     return recordDate < cutoffDate;
-                }).length;
+                });
                 
-                confirmMessage = '確定要清除' + months + '個月前的資料嗎？\n將清除 ' + itemsToRemove + ' 筆舊紀錄。';
+                itemsToRemove = recordsToDelete.length;
+                confirmMessage = '確定要清除' + months + '個月前的資料嗎？\n將從 Google Sheets 中刪除 ' + itemsToRemove + ' 筆舊紀錄。\n此操作無法復原！';
             }
             
             if (itemsToRemove === 0) {
@@ -978,30 +1106,84 @@
                 return;
             }
             
-            var originalLength = records.length;
-            
-            if (clearValue === 'all') {
-                records = [];
-                nextId = 1;
-            } else {
-                records = records.filter(function(record) {
-                    var recordDate = new Date(record.changeDate);
-                    return recordDate >= cutoffDate;
-                });
-            }
-            
-            var removedCount = originalLength - records.length;
-            
-            renderTable();
-            updateStats();
             closeClearModal();
+            showLoading(true);
+            showNotification('⏳ 正在清除 ' + itemsToRemove + ' 筆資料...', 'info');
             
-            showNotification('🗑️ 已清除 ' + removedCount + ' 筆舊資料', 'success');
-            console.log('清除了 ' + removedCount + ' 筆資料，剩餘 ' + records.length + ' 筆');
+            // 批量刪除記錄
+            var deletePromises = recordsToDelete.map(function(record) {
+                return deleteRecordFromSheet(record.id);
+            });
+            
+            Promise.all(deletePromises).then(function() {
+                // 所有刪除完成後重新載入資料
+                return loadRecordsFromSheet();
+            }).then(function() {
+                showNotification('🗑️ 已清除 ' + itemsToRemove + ' 筆舊資料', 'success');
+                console.log('清除了 ' + itemsToRemove + ' 筆資料');
+            }).catch(function(error) {
+                console.error("批量刪除失敗:", error);
+                showNotification('❌ 清除失敗：' + error.message, 'error');
+                // 重新載入資料以確保同步
+                loadRecordsFromSheet();
+            }).finally(function() {
+                showLoading(false);
+            });
+            
         } catch (error) {
             console.error("執行清除時發生錯誤:", error);
+            showLoading(false);
         }
     }
+
+    // 頁面載入完成後的初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOMContentLoaded 事件觸發");
+        
+        try {
+            // 設置預設日期
+            var today = new Date().toISOString().split('T')[0];
+            var changeDateEl = document.getElementById('changeDate');
+            
+            if (changeDateEl) changeDateEl.value = today;
+            
+            // 綁定按鈕事件
+            var addBtn = document.getElementById('addBtn');
+            var clearBtn = document.getElementById('clearBtn');
+            var exportBtn = document.getElementById('exportBtn');
+            var refreshBtn = document.getElementById('refreshBtn');
+            
+            if (addBtn) {
+                addBtn.addEventListener('click', addRecord);
+                console.log("新增按鈕事件已綁定");
+            }
+            
+            if (clearBtn) {
+                clearBtn.addEventListener('click', showClearModal);
+                console.log("清除按鈕事件已綁定");
+            }
+            
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportToExcel);
+                console.log("匯出按鈕事件已綁定");
+            }
+            
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshData);
+                console.log("重新整理按鈕事件已綁定");
+            }
+            
+            // 從 Google Sheets 載入初始資料
+            console.log("開始從 Google Sheets 載入資料");
+            loadRecordsFromSheet();
+            
+            console.log("初始化完成");
+        } catch (error) {
+            console.error("初始化時發生錯誤:", error);
+            // 如果初始化失敗，載入測試資料
+            loadTestData();
+        }
+    });
 
     // 確保函數在全域可用
     window.editRecord = editRecord;
@@ -1009,6 +1191,7 @@
     window.closeClearModal = closeClearModal;
     window.executeClear = executeClear;
     window.showClearModal = showClearModal;
+    window.refreshData = refreshData;
 
     console.log("JavaScript載入完成");
 })();
