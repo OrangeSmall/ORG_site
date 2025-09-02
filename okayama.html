@@ -55,6 +55,46 @@
 
         .content {
             padding: 40px 30px;
+            position: relative;
+        }
+
+        .progress-bar {
+            position: sticky;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+
+        .progress-track {
+            height: 8px;
+            background: #e0e6ed;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            width: 0%;
+            animation: progressAnimation 2s ease-out forwards;
+        }
+
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #667eea;
         }
 
         .day-card {
@@ -80,6 +120,33 @@
             margin-bottom: 25px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .day-card:hover .day-title::before {
+            left: 100%;
+        }
+
+        .day-title.departure {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            animation: gentlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
         .timeline {
@@ -104,6 +171,12 @@
             background: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .timeline-item::before {
@@ -116,6 +189,22 @@
             background: #667eea;
             border-radius: 50%;
             border: 3px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            background: #764ba2;
+            transform: scale(1.2);
+        }
+
+        .timeline-item.important::before {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            animation: importantPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes importantPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(253, 121, 168, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(253, 121, 168, 0); }
         }
 
         .time {
@@ -158,6 +247,7 @@
             font-size: 0.9rem;
             display: inline-block;
             margin-top: 5px;
+            margin-right: 8px;
         }
 
         .attraction {
@@ -288,18 +378,61 @@
         </div>
 
         <div class="content">
+            <!-- 旅程進度指示器 -->
+            <div class="progress-bar">
+                <div class="progress-text">🗾 岡山探索之旅進度</div>
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: #666;">
+                    <span>✈️ 出發</span>
+                    <span>🏛 探索</span>
+                    <span>🛍 購物</span>
+                    <span>🏠 回家</span>
+                </div>
+            </div>
+
+            <!-- 旅程統計摘要 -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; margin-bottom: 30px; color: white; text-align: center;">
+                <h3 style="margin-bottom: 20px; font-size: 1.4rem;">📊 旅程概況</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">3天</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">旅程天數</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">2晚</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">住宿nights</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">¥320</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">門票費用</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 1.5rem; font-weight: bold;">9間</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">推薦餐廳</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 第一天 -->
             <div class="day-card">
                 <div class="day-title">🗓 第一天｜9月15日（星期一）</div>
                 <div class="timeline">
-                    <div class="timeline-item">
+                    <div class="timeline-item important">
                         <div class="time">12:40</div>
                         <div class="activity">高雄小港機場出發</div>
                         <span class="location">台灣虎航 IT-213</span>
+                        <div style="margin-top: 8px; color: #fd79a8; font-size: 0.9rem; font-weight: bold;">
+                            ✈️ 岡山冒險之旅正式開始！
+                        </div>
                     </div>
-                    <div class="timeline-item">
+                    <div class="timeline-item important">
                         <div class="time">16:30</div>
                         <div class="activity">抵達岡山桃太郎機場（當地時間）</div>
+                        <div style="margin-top: 8px; color: #fd79a8; font-size: 0.9rem; font-weight: bold;">
+                            🎌 歡迎來到岡山！
+                        </div>
                     </div>
                     <div class="timeline-item">
                         <div class="time">17:30</div>
@@ -312,32 +445,26 @@
                     </div>
                     <div class="timeline-item">
                         <div class="time">19:00</div>
-                        <div class="activity">抵達飯店 Check-in</div>
-                        <span class="hotel">BETTEI（別邸）¥2,300/人</span>
-                        <div style="margin-top: 8px; font-size: 0.9rem;">
-                            <a href="https://maps.app.goo.gl/nDTdFx6D1Y3krigUA" style="color: #667eea;">📍 BETTEI地圖位置</a>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="time">19:30</div>
-                        <div class="activity">飯店周邊晚餐 & 市區散步</div>
-                        <span class="meal">當地特色料理 [待補充]</span>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="time">19:30</div>
-                        <div class="activity">AEON MALL 購物用餐</div>
-                        <span class="location">原估步行15分鐘（需重新確認）</span>
+                        <div class="activity">岡山AEON MALL 購物</div>
+                        <span class="location">營業時間：10:00-22:00</span>
                         <div style="margin-top: 8px; font-size: 0.9rem;">
                             <a href="https://maps.app.goo.gl/4UP3UPtjwVLPwpoR6" style="color: #667eea;">📍 AEON MALL 地圖</a>
                         </div>
-                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">🍺 備案：居酒屋體驗當地夜生活</div>
-                        <div style="margin-top: 10px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 5px; font-size: 0.9rem; color: #856404;">
-                            <strong>⚠️ 備註：</strong><br>
-                            • 店家較早關，也可安排超市購物後回房間各種吃<br>
-                            • <strong>住宿附近超市：</strong>天満屋ハピーズ 昭和町店<br>
-                            • <a href="https://maps.app.goo.gl/asDJA8wL48Rc35sHA" style="color: #667eea;">📍 超市地圖位置</a><br>
-                            • <em style="color: #d68910;">*住宿地點已更改，超市位置需重新確認距離</em>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem; font-weight: bold;">
+                            ⚡ 若取車提早完成則可提前前往
                         </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">21:30</div>
+                        <div class="activity">民宿入住</div>
+                        <span class="hotel">スリーチアーズ（Three Cheers）</span>
+                        <div style="margin-top: 8px; font-size: 0.9rem;">
+                            <a href="https://maps.app.goo.gl/R8byVcwz5QZa2wpg6" style="color: #667eea;">📍 スリーチアーズ地圖位置</a>
+                        </div>
+                        <div style="margin-top: 8px; color: #00b894; font-size: 0.9rem; font-weight: bold;">
+                            💰 住宿費用：約台幣1,950元/人
+                        </div>
+                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">🛒 備案：超市購物後回民宿休息</div>
                     </div>
                 </div>
             </div>
@@ -348,7 +475,10 @@
                 <div class="timeline">
                     <div class="timeline-item">
                         <div class="time">09:00</div>
-                        <div class="activity">飯店出發前往倉敷</div>
+                        <div class="activity">民宿出發前往倉敷</div>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem; font-weight: bold;">
+                            🍳 若有安排早餐可能會提早出發
+                        </div>
                         <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">🚗 岡山 → 倉敷：約20分鐘車程</div>
                     </div>
                     <div class="timeline-item">
@@ -384,6 +514,9 @@
                         <div class="time">13:30</div>
                         <div class="activity">三井 Outlet Park 倉敷購物</div>
                         <span class="location">營業時間：10:00-20:00</span>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem;">
+                            📝 倉敷美觀地區行程結束後前往
+                        </div>
                         <div style="margin-top: 8px; font-size: 0.9rem;">
                             <a href="https://journey.tw/mitsui-outlet-park-kurashiki/" style="color: #667eea;">🔗 三井Outlet參考資訊</a>
                         </div>
@@ -391,7 +524,7 @@
                     <div class="timeline-item">
                         <div class="time">17:00</div>
                         <div class="activity">返回岡山市區</div>
-                        <span class="hotel">BETTEI（別邸）</span>
+                        <span class="hotel">スリーチアーズ（Three Cheers）</span>
                     </div>
                     <div class="timeline-item">
                         <div class="time">晚間</div>
@@ -401,55 +534,91 @@
                 </div>
             </div>
 
-            <!-- 第三天 -->
             <div class="day-card">
-                <div class="day-title">🗓 第三天｜9月17日（星期三）</div>
+                <div class="day-title departure">🗓 第三天｜9月17日（星期三）｜回程日</div>
                 <div class="timeline">
                     <div class="timeline-item">
                         <div class="time">09:00</div>
-                        <div class="activity">飯店 Check-out，寄放行李</div>
+                        <div class="activity">離開民宿</div>
+                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">
+                            🎒 整理行李，準備最後一天的探索
+                        </div>
                     </div>
                     <div class="timeline-item">
                         <div class="time">09:30</div>
-                        <div class="activity">岡山市區觀光</div>
+                        <div class="activity">岡山城觀光</div>
                         <div style="margin-top: 10px;">
                             <span class="attraction">岡山城（¥320）</span>
                         </div>
                         <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">
                             🏯 岡山城：9:00-17:30 | 參觀約1小時<br>
-                            ⛩️ 備案：吉備津神社（如時間充裕）
+                            📸 把握機會拍攝最後的岡山美景
                         </div>
                         <div style="margin-top: 8px; font-size: 0.9rem;">
                             <a href="https://journey.tw/okayama-jo/" style="color: #667eea;">🔗 岡山城參考資訊</a>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time">11:30</div>
-                        <div class="activity">岡山市區午餐（時間較充裕）</div>
-                        <span class="meal">當地特色餐廳 [待補充]</span>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="time">12:30</div>
-                        <div class="activity">取回行李，前往機場</div>
-                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">🚗 岡山市區 → 機場：約40分鐘車程</div>
+                        <div class="time">11:00</div>
+                        <div class="activity">午餐時光</div>
+                        <span class="meal">涮涮鍋 壽喜燒 惠（暫定）</span>
+                        <div style="margin-top: 8px; font-size: 0.9rem;">
+                            <a href="https://hitorinabe-megu.gorp.jp/" style="color: #667eea;">🔗 涮涮鍋 壽喜燒 惠官網</a>
+                        </div>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem;">
+                            🍲 享用最後一頓日式美食
+                        </div>
                     </div>
                     <div class="timeline-item">
                         <div class="time">13:30</div>
-                        <div class="activity">抵達機場，辦理還車手續</div>
+                        <div class="activity">前往吉備津神社</div>
+                        <div style="margin-top: 10px;">
+                            <span class="attraction">吉備津神社參拜</span>
+                        </div>
+                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">
+                            ⛩️ 為旅程畫下完美句號<br>
+                            🙏 祈求平安順利回家
+                        </div>
+                        <div style="margin-top: 10px; padding: 8px 12px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; font-size: 0.85rem; color: #667eea;">
+                            <strong>💡 彈性安排：</strong>若上述行程提早結束，可再另行安排其他景點
+                        </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time">14:30</div>
-                        <div class="activity">辦理登機手續、安檢</div>
+                        <div class="time">15:30</div>
+                        <div class="activity">抵達岡山機場，辦理還車手續</div>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem;">
+                            🚗 感謝租車陪伴這趟旅程
+                        </div>
                     </div>
                     <div class="timeline-item">
                         <div class="time">15:55</div>
+                        <div class="activity">辦理登機手續、安檢</div>
+                        <div style="margin-top: 8px; color: #666; font-size: 0.9rem;">
+                            🛂 國際線登機手續，準備回家
+                        </div>
+                    </div>
+                    <div class="timeline-item important">
+                        <div class="time">17:55</div>
                         <div class="activity">岡山桃太郎機場起飛</div>
                         <span class="location">台灣虎航 IT-214</span>
+                        <div style="margin-top: 8px; color: #667eea; font-size: 0.9rem;">
+                            ✈️ 飛行時間約2小時45分鐘
+                        </div>
+                        <div style="margin-top: 5px; color: #fd79a8; font-size: 0.9rem; font-weight: bold;">
+                            👋 さようなら岡山！謝謝美好回憶
+                        </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="time">17:40</div>
+                    <div class="timeline-item important">
+                        <div class="time">19:40</div>
                         <div class="activity">抵達高雄小港機場（台灣時間）</div>
-                        <span class="location">🎉 行程結束</span>
+                        <span class="location">🎉 岡山之旅圓滿結束！</span>
+                        <div style="margin-top: 10px; padding: 15px; background: linear-gradient(45deg, #00b894, #00cec9); color: white; border-radius: 10px; text-align: center; font-weight: bold; box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);">
+                            <div style="font-size: 1.1rem; margin-bottom: 5px;">🏠 Welcome Home!</div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">帶著滿滿的美好回憶回到溫暖的台灣</div>
+                            <div style="margin-top: 8px; font-size: 0.8rem;">
+                                📸 別忘了整理照片 | 🛍 分享戰利品 | ❤️ 回味美食
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -461,16 +630,17 @@
                     <div class="todo-category">
                         <h4>🏨 住宿資訊</h4>
                         <div class="todo-item" style="color: #00b894;">
-                            <input type="checkbox" class="checkbox" checked disabled> BETTEI（別邸）地圖位置確認
+                            <input type="checkbox" class="checkbox" checked disabled> スリーチアーズ地圖位置確認
                         </div>
                         <div class="todo-item" style="color: #00b894;">
-                            <input type="checkbox" class="checkbox" checked disabled> 住宿費用：每人台幣2,300元（兩晚）
+                            <input type="checkbox" class="checkbox" checked disabled> 住宿費用：約台幣1,950元/人（兩晚）
                         </div>
                         <div class="todo-item">
-                            <input type="checkbox" class="checkbox"> 飯店設施介紹
+                            <input type="checkbox" class="checkbox"> 民宿介紹與設施詳情
                         </div>
                         <div style="margin-top: 10px; font-size: 0.85rem;">
-                            <a href="https://maps.app.goo.gl/nDTdFx6D1Y3krigUA" style="color: #667eea;">📍 BETTEI地圖位置</a>
+                            <a href="https://maps.app.goo.gl/R8byVcwz5QZa2wpg6" style="color: #667eea;">📍 スリーチアーズ地圖位置</a><br>
+                            <span style="color: #666;">📖 民宿介紹：參考網址 [待補充]</span>
                         </div>
                     </div>
 
@@ -548,10 +718,10 @@
                     <div class="todo-category">
                         <h4>💰 預算規劃</h4>
                         <div class="todo-item" style="color: #00b894;">
-                            <input type="checkbox" class="checkbox" checked disabled> 住宿：每人台幣2,300元（兩晚）
+                            <input type="checkbox" class="checkbox" checked disabled> 住宿：約台幣1,950元/人（兩晚）
                         </div>
-                        <div class="todo-item">
-                            <input type="checkbox" class="checkbox"> 餐飲預算規劃
+                        <div class="todo-item" style="color: #00b894;">
+                            <input type="checkbox" class="checkbox" checked disabled> 餐飲預算：日幣20,000元（暫定）
                         </div>
                         <div class="todo-item" style="color: #00b894;">
                             <input type="checkbox" class="checkbox" checked disabled> 門票：¥320（岡山城）
@@ -559,8 +729,37 @@
                         <div class="todo-item" style="color: #00b894;">
                             <input type="checkbox" class="checkbox" checked disabled> 租車：每人台幣1,800元
                         </div>
+                        <div class="todo-item" style="color: #00b894;">
+                            <input type="checkbox" class="checkbox" checked disabled> 購物預算：依個人需求決定
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(0, 184, 148, 0.1); border-radius: 8px; font-size: 0.85rem;">
+                            <strong style="color: #00b894;">💳 預算總覽：</strong><br>
+                            • <strong>基本費用：</strong>住宿¥1,950 + 租車¥1,800 + 門票¥320<br>
+                            • <strong>餐飲：</strong>約¥20,000（可依實際調整）<br>
+                            • <strong>購物：</strong>依個人喜好和需求
+                        </div>
+                    </div>
+
+                    <div class="todo-category">
+                        <h4>📱 實用資訊</h4>
                         <div class="todo-item">
-                            <input type="checkbox" class="checkbox"> 購物及雜費預算
+                            <input type="checkbox" class="checkbox"> 當地緊急聯絡電話
+                        </div>
+                        <div class="todo-item">
+                            <input type="checkbox" class="checkbox"> 網路/Wi-Fi 安排
+                        </div>
+                        <div class="todo-item">
+                            <input type="checkbox" class="checkbox"> 必備物品清單
+                        </div>
+                        <div class="todo-item">
+                            <input type="checkbox" class="checkbox"> 民宿周邊生活機能確認
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(0, 184, 148, 0.1); border-radius: 8px; font-size: 0.85rem;">
+                            <strong style="color: #00b894;">🗺 生活機能參考：</strong><br>
+                            • <strong>購物：</strong>岡山AEON MALL（營業至22:00）<br>
+                            • <strong>超市：</strong>天満屋ハピーズ 昭和町店<br>
+                            • <a href="https://maps.app.goo.gl/asDJA8wL48Rc35sHA" style="color: #667eea;">📍 超市地圖</a> | 
+                            <a href="https://maps.app.goo.gl/4UP3UPtjwVLPwpoR6" style="color: #667eea;">📍 AEON地圖</a>
                         </div>
                     </div>
                 </div>
@@ -577,6 +776,30 @@
                     <li>下載離線地圖及翻譯APP</li>
                     <li>確認國際駕照有效期限</li>
                 </ul>
+            </div>
+
+            <!-- 旅程結束感謝訊息 -->
+            <div style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); border-radius: 20px; padding: 30px; margin-top: 40px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+                <div style="font-size: 2rem; margin-bottom: 15px;">🙏</div>
+                <h3 style="color: #2d3436; margin-bottom: 15px; font-size: 1.3rem;">岡山之旅規劃完成！</h3>
+                <p style="color: #636e72; line-height: 1.6; margin-bottom: 20px;">
+                    希望這份詳細的行程規劃能讓您的岡山之旅充滿美好回憶。<br>
+                    記得在旅途中保持彈性，享受每一個意外的驚喜！
+                </p>
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                    <div style="background: white; padding: 10px 15px; border-radius: 25px; font-size: 0.9rem; color: #2d3436; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+                        📱 隨時記錄美好時刻
+                    </div>
+                    <div style="background: white; padding: 10px 15px; border-radius: 25px; font-size: 0.9rem; color: #2d3436; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+                        🍜 品嘗在地美食
+                    </div>
+                    <div style="background: white; padding: 10px 15px; border-radius: 25px; font-size: 0.9rem; color: #2d3436; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+                        🛍 理性購物
+                    </div>
+                    <div style="background: white; padding: 10px 15px; border-radius: 25px; font-size: 0.9rem; color: #2d3436; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);">
+                        ✈️ 平安順利
+                    </div>
+                </div>
             </div>
         </div>
     </div>
