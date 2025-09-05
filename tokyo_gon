@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本行程表 2025年9月16-23日</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+    
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .header {
+        background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+    }
+    
+    .weather-alert {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        padding: 15px;
+        margin: 20px;
+        border-radius: 8px;
+        border-left: 5px solid #ffc107;
+    }
+    
+    .weather-alert h3 {
+        margin-bottom: 10px;
+        color: #d39e00;
+    }
+    
+    .content {
+        padding: 30px;
+    }
+    
+    .section {
+        margin-bottom: 40px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px;
+        border-left: 5px solid #4ecdc4;
+    }
+    
+    .section h2 {
+        color: #2c3e50;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .day-card {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+    
+    .day-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .day-title {
+        font-size: 1.4em;
+        font-weight: bold;
+    }
+    
+    .weather-info {
+        background: rgba(255,255,255,0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+    }
+    
+    .day-content {
+        padding: 25px;
+    }
+    
+    .day-content ul {
+        list-style: none;
+    }
+    
+    .day-content li {
+        margin-bottom: 12px;
+        padding-left: 25px;
+        position: relative;
+    }
+    
+    .day-content li:before {
+        content: "📍";
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    
+    .highlight {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 4px solid #2196f3;
+    }
+    
+    .transport-info {
+        background: #f1f8e9;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border-left: 4px solid #4caf50;
+    }
+    
+    .backup-spots {
+        background: #fff8e1;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #ff9800;
+    }
+    
+    .backup-spots h3 {
+        color: #e65100;
+        margin-bottom: 15px;
+    }
+    
+    .backup-spots ul {
+        columns: 2;
+        column-gap: 30px;
+    }
+    
+    .backup-spots li {
+        margin-bottom: 8px;
+        padding-left: 20px;
+    }
+    
+    .backup-spots li:before {
+        content: "🎯";
+    }
+    
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2em;
+        }
+        
+        .day-header {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .backup-spots ul {
+            columns: 1;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇯🇵 日本行程表</h1>
+            <p>2025年9月16日 - 9月23日 | 成田 → 富士山 → 熱海 → 鎌倉 → 東京</p>
+        </div>
+
+```
+    <div class="weather-alert">
+        <h3>🌦️ 9月天氣預報提醒</h3>
+        <p><strong>溫度：</strong>20-28°C (早期較熱，月底轉涼)</p>
+        <p><strong>降雨：</strong>颱風季節，平均7-10個雨天，東京9月是全年最多雨月份</p>
+        <p><strong>建議：</strong>準備雨具、防水鞋、輕薄外套。關注天氣預報，準備室內備案行程</p>
+    </div>
+    
+    <div class="content">
+        <!-- 航班與交通 -->
+        <div class="section">
+            <h2>✈️ 航班與交通</h2>
+            <div class="transport-info">
+                <ul>
+                    <li><strong>去程：</strong>09/16（二）高雄小港機場 ➤ 成田機場（12:40 抵達）</li>
+                    <li><strong>自駕路線：</strong>成田機場 ➝ 富士山 ➝ 熱海 ➝ 鎌倉 ➝ 東京</li>
+                    <li><strong>還車：</strong>09/21（日）14:00 前於池袋上池袋店（SOUKYOレンタカー）</li>
+                    <li><strong>回程：</strong>09/23（二）11:30 抵達成田機場</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 每日行程 -->
+        <div class="section">
+            <h2>🗓️ 每日詳細行程</h2>
+            
+            <!-- Day 1 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/16（二）｜成田 ➝ 富士河口湖</div>
+                    <div class="weather-info">🌤️ 26°C | 可能陣雨</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>小港機場 ➝ 成田機場（12:40 抵達）</li>
+                        <li>前往羅森便利商店（富士河口湖町公所前）補給</li>
+                        <li>午餐：餺飥不動 東戀路店（13:00 後避開人潮）</li>
+                        <li>入住：ORIYA Mt Fuji 雅 MIYABI</li>
+                        <li>Forest Mall 河口湖購物</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>💡 小提醒：</strong>多數住宿櫃檯提供纜車9折券
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 2 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/17（三）｜河口湖周邊一日遊</div>
+                    <div class="weather-info">🌧️ 22°C | 多雲有雨</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>09:00 出發 ➝ 天上山公園（富士山纜車）</li>
+                        <li>兔子神社、狸貓茶屋、fugiyama cookie</li>
+                        <li>fugisan shokupan（11:00 開店）</li>
+                        <li>新倉山淺間公園、河口湖美術館、河口淺間神社</li>
+                        <li>大石公園（波波草）、西湖、精進湖</li>
+                        <li>本栖湖展望公園（1000元紙鈔背景）</li>
+                        <li>富士山世界遺產中心 ➝ 富士山本宮淺間大社</li>
+                        <li>富士川服務區星巴克、富士山夢之大橋</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>🏨 住宿：</strong>ORIYA NARUSAWA
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 3 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/18（四）｜富士吉田 ➝ 熱海</div>
+                    <div class="weather-info">☁️ 25°C | 陰天</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>金鳥居參觀</li>
+                        <li>吉田烏龍麵巡禮：元祖MIURA、TSURUYA、麵許皆傳</li>
+                        <li>長池親水公園 ➝ 御殿場 Premium Outlets</li>
+                        <li>大涌谷（黑蛋體驗）</li>
+                        <li>熱海平和通商店街美食：章魚天、鮪魚霜淇淋、巴斯克芝士、奶油紅豆、溫泉饅頭</li>
+                        <li>晚餐：熱海おさかな大食堂（營業至20:00）</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>🏨 住宿：</strong>樂天STAY熱海溫泉飯店
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 4 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/19（五）｜熱海自由行程</div>
+                    <div class="weather-info">🌤️ 27°C | 多雲轉晴</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>MOA 美術館 + 蕎麥麵：そばの坊</li>
+                        <li>熱海銀座商店街散步</li>
+                        <li>熱海布丁Cafe 2nd（二樓拍照區）</li>
+                        <li>熱海さとり（抹茶可麗餅）</li>
+                        <li>青葉舍</li>
+                        <li>選擇性景點：Akao Herb & Rose Garden、大室山</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Day 5 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/20（六）｜熱海 ➝ 鎌倉 ➝ 東京</div>
+                    <div class="weather-info">☀️ 28°C | 晴朗</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>10:00 離開熱海</li>
+                        <li>小町通商店街午餐+美食巡禮：咖哩麵包、可樂餅、生巧克力塔</li>
+                        <li>錢洗弁財天</li>
+                        <li>湘南深澤站搭單軌 ➝ 鎌倉高校前（灌籃高手場景）</li>
+                        <li>江之島：弁財天商店街、仙貝</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>🏨 住宿：</strong>夜宿日暮里（預計於淺草橋還車）
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 6 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/21（日）｜東京市區</div>
+                    <div class="weather-info">⛅ 27°C | 多雲</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>新宿3D貓咪看板</li>
+                        <li>原宿 ➝ 表參道 ➝ 澀谷</li>
+                        <li>阿美橫町</li>
+                        <li>池袋還車（14:00前）</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>🏨 住宿：</strong>ART 日暮里郎伍德酒店
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 7 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/22（一）｜東京市區自由行</div>
+                    <div class="weather-info">🌤️ 25°C | 舒適宜人</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>自由安排東京市區景點</li>
+                        <li>建議：淺草寺、晴空塔、築地市場、銀座購物</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>🏨 住宿：</strong>ART 日暮里郎伍德酒店
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Day 8 -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div class="day-title">09/23（二）｜東京 ➝ 成田機場 ➤ 回台</div>
+                    <div class="weather-info">☀️ 24°C | 晴朗</div>
+                </div>
+                <div class="day-content">
+                    <ul>
+                        <li>整理行李、最後購物</li>
+                        <li>前往成田機場</li>
+                        <li>11:30 抵達機場辦理出境手續</li>
+                        <li>踏上回台旅程</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 備用景點 -->
+        <div class="section">
+            <h2>🎯 備用推薦景點</h2>
+            <div class="backup-spots">
+                <h3>富士山區域</h3>
+                <ul>
+                    <li>馬飼野牧場</li>
+                    <li>富士山飛行傘</li>
+                    <li>田貫湖倒富士</li>
+                    <li>清里テラス（サンメドウズ）</li>
+                </ul>
+                
+                <h3>靜岡・神奈川區域</h3>
+                <ul>
+                    <li>日本平</li>
+                    <li>清水魚市場</li>
+                    <li>三保松之原</li>
+                    <li>伊豆全景公園</li>
+                    <li>大室山</li>
+                    <li>三島天空步道</li>
+                </ul>
+                
+                <h3>箱根區域</h3>
+                <ul>
+                    <li>箱根神社</li>
+                    <li>水中鳥居</li>
+                    <li>大涌谷</li>
+                    <li>雕刻之森美術館</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+</body>
+</html>
