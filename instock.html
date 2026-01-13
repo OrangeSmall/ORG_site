@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>庫存盤點表</title>
+<style>
+  /* --- 全局設定：確保寬度計算包含邊框 (關鍵修正) --- */
+  * { box-sizing: border-box; }
+
+  body { 
+    font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; 
+    margin: 20px; 
+    background-color: #f4f4f4; 
+  }
+  .container {
+    max-width: 100%; 
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+  }
+
+  /* --- 頂部標題區 --- */
+  .top-header {
+    text-align: center; 
+    margin-bottom: 20px;
+    border-bottom: 3px solid #000;
+    padding-bottom: 15px;
+    position: relative;
+  }
+
+  /* 標題：毛筆字體 */
+  #sheetTitle {
+    font-family: "Kaiti TC", "STKaiti", "BiauKai", "標楷體", "DFKai-SB", serif; 
+    font-size: 48px; 
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  /* 日期：手寫留白 */
+  .date-box {
+    position: absolute;
+    right: 0;
+    bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+  }
+  .date-line {
+    display: inline-block;
+    width: 150px;
+    border-bottom: 2px solid #000;
+  }
+
+  /* --- 警語 --- */
+  .slogan {
+    text-align: center;
+    color: #d9534f;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 10px 0 15px 0;
+    padding: 5px;
+    background-color: #fff3f3;
+    border: 1px dashed #d9534f;
+  }
+
+  /* --- 表格核心設定 --- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid #000; 
+    table-layout: fixed; /* 強制依照設定的 % 分配寬度 */
+  }
+  
+  th, td {
+    border: 1px solid #000;
+    font-size: 19px; /* 字體微調，避免過大換行 */
+    color: #000;
+    vertical-align: middle;
+    padding: 0; /* 預設歸零，由內部元素控制 */
+    height: 50px; 
+  }
+
+  /* --- 欄位寬度比例 (合計 100%) --- */
+  /* 1. 品名 45% */
+  .col-name { 
+    width: 45%; 
+    text-align: left; 
+    padding: 5px 10px; /* 品名需要內距 */
+    font-weight: bold; 
+    line-height: 1.3;
+    overflow: hidden; /* 防止過長文字撐開 */
+  }
+  
+  /* 2. 數量(箱) 15% */
+  .col-box-header { width: 15%; }
+  
+  /* 3. 數量(包/盒) 15% */
+  .col-pack-header { width: 15%; }
+  
+  /* 4. 效期 25% */
+  .col-date { 
+    width: 25%; 
+    text-align: center; 
+    font-size: 18px; 
+    padding: 5px; 
+  }
+
+  /* --- 數量欄位內部分割 (Flexbox) --- */
+  .split-box {
+    display: flex;
+    width: 100%;
+    height: 100%; 
+    align-items: stretch; /* 強制等高 */
+  }
+  
+  /* 左：手寫區 */
+  .split-left {
+    flex-grow: 1; /* 自動填滿剩餘空間 */
+    background-color: #fff;
+    border-right: 1px solid #000; 
+  }
+
+  /* 右：單位區 */
+  .split-right {
+    width: 50px; /* 單位固定寬度，確保文字不折行 */
+    min-width: 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #e0e0e0; /* 灰底 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 確保列印背景色 */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* --- 表頭樣式 --- */
+  .header-row td {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    font-weight: normal;
+    font-size: 18px;
+    padding: 10px; 
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* --- 功能區 --- */
+  #loading, #error { text-align: center; padding: 20px; font-size: 18px; }
+  #error { color: red; display: none; }
+  .no-print { text-align: center; margin-bottom: 20px; }
+  .btn-refresh {
+    padding: 10px 25px;
+    background: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* --- A4 列印設定 --- */
+  @media print {
+    @page { size: A4; margin: 8mm; }
+    body { margin: 0; background: white; }
+    .container { box-shadow: none; padding: 0; margin: 0; width: 100%; }
+    .no-print { display: none !important; }
+    
+    table { border: 2px solid #000; }
+    th, td { border: 1px solid #000; }
+    
+    #sheetTitle { font-family: "Kaiti TC", "STKaiti", "BiauKai", "標楷體", serif; }
+    .slogan { border: 1px solid #d9534f; color: red !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="no-print">
+    <button class="btn-refresh" onclick="location.reload()">🔄 更新品項 (僅更新品名/效期)</button>
+  </div>
+
+  <div id="loading">讀取 Google Sheet 中...</div>
+  <div id="error">讀取失敗。</div>
+
+  <div id="contentArea" style="display:none;">
+    
+    <div class="top-header">
+      <h1 id="sheetTitle">庫存表</h1> 
+      <div class="date-box">
+        填表日期：<div class="date-line"></div>
+      </div>
+    </div>
+
+    <div class="slogan">
+      ※ 出入庫請務必更改數量 ※
+    </div>
+
+    <table>
+      <thead>
+        <tr class="header-row">
+          <td class="col-name">品名</td>
+          <td class="col-box-header">數量（箱）</td>
+          <td class="col-pack-header">數量（包／盒）</td>
+          <td class="col-date">最短效期</td>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // 您的 Google Sheet CSV 連結
+  var csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR6NReikJupU2FoEZ-pliojjbRtxO3rOZ_s39T08AonR1W2oQTe7dNjAzQM48acfFJ6bMFdnef5wDkW/pub?gid=0&single=true&output=csv'; 
+
+  // 防止快取
+  var finalUrl = csvUrl + '&t=' + new Date().getTime();
+
+  fetch(finalUrl)
+    .then(response => response.text())
+    .then(csvText => {
+      const rows = csvText.split('\n');
+      const tableBody = document.getElementById('tableBody');
+      const titleEl = document.getElementById('sheetTitle');
+
+      // 1. 抓取標題 (CSV 第 1 列)
+      if (rows.length > 0) {
+        let firstRow = rows[0].split(',')[0]; 
+        firstRow = firstRow.replace(/^"|"$/g, '').trim(); 
+        if(firstRow) titleEl.innerText = firstRow;
+      }
+
+      // 2. 抓取資料 (從第 3 列開始)
+      for (let i = 2; i < rows.length; i++) {
+        let row = rows[i].trim();
+        if (!row) continue;
+        
+        const cols = row.split(',');
+
+        // 確保至少有資料
+        if (cols.length >= 4) { 
+          const tr = document.createElement('tr');
+          
+          // 品名 (Column A -> Index 0)
+          let name = (cols[0] || "").replace(/^"|"$/g, '');
+          
+          // 效期 (優先抓 G欄 Index 6, 若無則抓 F欄 Index 5)
+          let exp = "";
+          if (cols.length > 6) exp = (cols[6] || "").replace(/^"|"$/g, '');
+          else if (cols.length > 5) exp = (cols[5] || "").replace(/^"|"$/g, '');
+
+          // 生成表格列
+          tr.innerHTML = `
+            <td class="col-name">${name}</td>
+            
+            <td>
+              <div class="split-box">
+                <div class="split-left"></div> 
+                <div class="split-right">箱</div>
+              </div>
+            </td>
+            
+            <td>
+              <div class="split-box">
+                <div class="split-left"></div> 
+                <div class="split-right">包/盒</div>
+              </div>
+            </td>
+            
+            <td class="col-date">${exp}</td>
+          `;
+          tableBody.appendChild(tr);
+        }
+      }
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('contentArea').style.display = 'block';
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
