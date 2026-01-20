@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<style>
+    body { font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; background-color: #f4f4f4; color: #333; line-height: 1.6; }
+    .container { max-width: 800px; margin: 20px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .header { text-align: center; border-bottom: 3px solid #0056b3; padding-bottom: 20px; margin-bottom: 20px; }
+    .header h1 { color: #0056b3; margin: 0; font-size: 28px; }
+    .header p { color: #666; font-size: 16px; margin-top: 10px; }
+    
+    .goals-box { background-color: #e3f2fd; border-left: 5px solid #2196F3; padding: 15px; margin-bottom: 25px; border-radius: 4px; }
+    .goals-title { font-weight: bold; color: #0d47a1; margin-bottom: 5px; font-size: 18px; }
+    .goals-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .goals-list li { background: #fff; padding: 5px 10px; border-radius: 15px; font-size: 14px; border: 1px solid #bbdefb; }
+
+    .section-title { font-size: 20px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 8px solid #FF9800; padding-left: 10px; display: flex; align-items: center; }
+    
+    .discussion-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fff; }
+    .discussion-card h3 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .product-grid { grid-template-columns: 1fr; } }
+    
+    .price-options { background: #fff3e0; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; color: #e65100; margin-top: 10px; }
+    
+    .bug-zone { background-color: #ffebee; border: 2px dashed #ef5350; padding: 20px; border-radius: 8px; }
+    .bug-title { color: #c62828; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
+    
+    .checkbox-group label { display: block; margin-bottom: 8px; cursor: pointer; }
+    .highlight { color: #d32f2f; font-weight: bold; }
+    
+    .footer { text-align: center; margin-top: 40px; font-size: 14px; color: #777; border-top: 1px solid #eee; padding-top: 20px; }
+    .btn-action { display: inline-block; background: #0056b3; color: white; padding: 10px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🚀 2026 用餐體驗升級計畫</h1>
+        <p>代客料理服務啟動前置討論 (預計2026/01啟用)</p>
+    </div>
+
+    <div class="goals-box">
+        <div class="goals-title">💎 核心戰略目標</div>
+        <ul class="goals-list">
+            <li>💰 讓顧客買越多越划算</li>
+            <li>📈 提升毛利率</li>
+            <li>😋 豐富用餐體驗</li>
+            <li>🏢 增加營業額與獲利</li>
+        </ul>
+    </div>
+
+    <div class="section-title">
+        議題 ①：三大類別定價與規則
+    </div>
+    <p style="color:#666; font-size:14px;">核心爭議：採「計次收費(不限片數)」或「計量收費」？目標是一律同價位(如$100)吃到飽。</p>
+
+    <div class="product-grid">
+        <div class="discussion-card">
+            <h3>🐟 A. 魚鮮系列</h3>
+            <p><strong>包含：</strong>鮭魚/鱈魚切片、全一夜干、虱目魚肚、海自慢魚系列...</p>
+            <hr style="border:0; border-top:1px dashed #ccc;">
+            <p><strong>討論重點：</strong></p>
+            <div class="price-options">
+                定價建議：$100 / $150 / $200 ?<br>
+                <span style="font-size:0.9em; color:#333; font-weight:normal;">(是否不限片數一價到底？)</span>
+            </div>
+            <p style="font-size:0.9em; color:#d32f2f;">❓鱸魚是否適合？(時間/口感)</p>
+        </div>
+
+        <div class="discussion-card">
+            <h3>🦑 B. 海鮮系列</h3>
+            <p><strong>包含：</strong>中卷系列、蒲燒鰻魚...</p>
+            <hr style="border:0; border-top:1px dashed #ccc;">
+            <p><strong>討論重點：</strong></p>
+            <div class="price-options">
+                定價建議：$100 / $150 / $200 ?<br>
+                <span style="font-size:0.9em; color:#333; font-weight:normal;">(是否不限片數一價到底？)</span>
+            </div>
+        </div>
+
+        <div class="discussion-card">
+            <h3>🥓 C. 加工肉品系列</h3>
+            <p><strong>包含：</strong>明太子手羽/雞翅、豬腳、培根...</p>
+            <hr style="border:0; border-top:1px dashed #ccc;">
+            <p><strong>討論重點：</strong></p>
+            <div class="price-options">
+                定價建議：$100 / $150 / $200 ?<br>
+                <span style="font-size:0.9em; color:#333; font-weight:normal;">(是否不限片數一價到底？)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">
+        議題 ②：料理方式與執行界線
+    </div>
+    <div class="discussion-card">
+        <p><strong>⚠️ 我們提供什麼服務？ (請勾選/刪除)</strong></p>
+        <div class="checkbox-group">
+            <label>⬜ <strong>烤</strong> (基本盤？設備是否足夠？)</label>
+            <label>⬜ <strong>味噌湯</strong> (適合魚頭/邊角料？)</label>
+            <label>⬜ <strong>清蒸</strong> (適合清淡口味？耗時長？)</label>
+            <label>⬜ <strong>其他：</strong>_____________</label>
+        </div>
+        <br>
+        <p><strong>⚠️ 商品界線設定</strong></p>
+        <ul>
+            <li>哪些商品<strong>絕對不能</strong>代客料理？(易碎、難熟、太便宜?)</li>
+            <li>如何定義「一件」與「一份」？</li>
+        </ul>
+    </div>
+
+    <div class="bug-zone">
+        <div class="bug-title">🐞 大家來找 Bug (風險預判)</div>
+        <p>為了避免上線大亂，請門市人員預想最糟情況：</p>
+        <ul style="margin-left: 20px;">
+            <li><strong>標籤優化：</strong>如何區分「純買」與「要煮」？需要貼紙嗎？</li>
+            <li><strong>產能塞車：</strong>若客人買 50 片魚要求一次烤完(因不限片數)，怎麼辦？</li>
+            <li><strong>客訴預防：</strong>口味太鹹/太老/沒熟的 SOP？</li>
+        </ul>
+        <p style="margin-top:10px; font-weight:bold;">👉 請寫下您認為最大的執行漏洞：</p>
+        <div style="border-bottom: 2px solid #ef5350; height: 30px; margin-bottom: 10px;"></div>
+    </div>
+
+    <div class="footer">
+        <p>請各門市主管彙整店內意見後回報。<br>公司將依據回饋優化最終方案。</p>
+        <a href="#" class="btn-action">填寫回饋意見表 (範例)</a>
+    </div>
+</div>
+
+</body>
+</html>
