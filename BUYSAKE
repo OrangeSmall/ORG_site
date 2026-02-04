@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>平凡五金行 - 酒類下單表 (V8)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* === 全局設定 === */
+        body { font-family: 'Noto Serif TC', serif; background-color: #f3f4f6; }
+        
+        /* 數字字體 */
+        .font-num { font-family: 'Arial', sans-serif; letter-spacing: 0.5px; }
+
+        /* 去除輸入框樣式 */
+        input:focus, select:focus { outline: none; border-color: #8B3A3A; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* 店別按鈕樣式 (選中狀態) */
+        .store-btn.active {
+            background-color: #8B3A3A;
+            color: white;
+            border-color: #8B3A3A;
+            font-weight: bold;
+        }
+        /* 店別按鈕樣式 (未選中) */
+        .store-btn {
+            background-color: #f3f4f6;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        /* === 圖片生成專用容器 (隱藏) === */
+        #print-container {
+            position: fixed;
+            top: 0; left: -9999px;
+            width: 900px; /* 強制 A4 寬度 */
+            background-color: white;
+            padding: 60px;
+            box-sizing: border-box;
+            z-index: -10;
+            color: #000;
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+        }
+
+        /* 出圖表格樣式 */
+        .print-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .print-table th { 
+            text-align: left; border-bottom: 2px solid #333; padding: 10px 5px; 
+            font-size: 14px; color: #555; font-weight: bold;
+        }
+        .print-table td { 
+            border-bottom: 1px solid #eee; padding: 15px 5px;
+            vertical-align: middle; font-size: 16px;
+            line-height: 1.5;
+        }
+        .print-table tr:nth-child(even) { background-color: #fdfdfd; }
+        
+        /* 出圖標題區塊 */
+        .print-header { 
+            display: flex; justify-content: space-between; align-items: flex-end;
+            border-bottom: 4px solid #000; padding-bottom: 20px; margin-bottom: 30px;
+        }
+
+        #img-modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95); z-index: 9999;
+            flex-direction: column; align-items: center; justify-content: center; padding: 10px;
+        }
+        #generated-img {
+            max-width: 100%; max-height: 85vh; border: 2px solid #fff; background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); object-fit: contain;
+        }
+    </style>
+</head>
+<body class="pb-32">
+
+    <!-- 頂部導航 -->
+    <div class="sticky top-0 z-50 bg-[#1a1a1a] text-white shadow-lg p-3">
+        <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center gap-2">
+                <span class="text-xl font-bold tracking-widest">平凡五金行</span>
+                <span class="text-[10px] bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">酒類下單 V8</span>
+            </div>
+            <div class="text-xs text-gray-400 font-num" id="total-badge">總計: $0</div>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+            <button onclick="addNewSupplier()" class="bg-blue-600 text-white py-2 rounded shadow text-xs"><i class="fas fa-plus"></i> 廠商</button>
+            <button onclick="saveData(); alert('已儲存！')" class="bg-green-600 text-white py-2 rounded shadow text-xs"><i class="fas fa-save"></i> 儲存</button>
+            <button onclick="generateImage()" class="bg-[#8B3A3A] text-white py-2 rounded shadow text-xs"><i class="fas fa-image"></i> 出圖</button>
+            <button onclick="clearAllData()" class="bg-red-800 text-white py-2 rounded shadow text-xs"><i class="fas fa-trash"></i> 重置</button>
+        </div>
+    </div>
+
+    <!-- 編輯區 -->
+    <div class="w-full max-w-[800px] mx-auto p-2 md:p-8 md:mt-4">
+        <div class="bg-white w-full shadow-md relative p-4 md:p-10 flex flex-col min-h-[80vh]">
+            
+            <!-- V8 更新：表頭區域 -->
+            <header class="border-b-2 border-gray-800 pb-4 mb-4 flex flex-col gap-4">
+                
+                <!-- 第一排：標題與店別 -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                    <div>
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-wide flex items-baseline gap-3 flex-wrap">
+                            酒類下單表
+                            <!-- 顯示當前選擇的店別 -->
+                            <span id="header-store-display" class="text-2xl font-bold text-[#8B3A3A] hidden"></span>
+                        </h1>
+                        
+                        <!-- 店別選擇按鈕 -->
+                        <div class="flex gap-2 mt-3">
+                            <button onclick="setStore('四維店')" id="btn-siwei" class="store-btn px-4 py-1.5 rounded-full text-sm transition-all duration-200">
+                                <i class="fas fa-store-alt"></i> 四維店
+                            </button>
+                            <button onclick="setStore('北高店')" id="btn-beigao" class="store-btn px-4 py-1.5 rounded-full text-sm transition-all duration-200">
+                                <i class="fas fa-building"></i> 北高店
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 日期與填單人 (移除了單號) -->
+                    <div class="w-full md:w-auto flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
+                            <span class="whitespace-nowrap text-sm">日期：</span>
+                            <input type="date" id="order-date" class="bg-transparent w-full text-lg focus:outline-none font-num font-bold text-black" onchange="saveData()">
+                        </div>
+                        <div class="text-right mt-1">
+                            <p class="text-sm text-gray-500">填單人：<input type="text" value="小橘" class="w-24 text-right border-b border-gray-300 focus:outline-none text-black font-bold" id="order-user" onchange="saveData()"></p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 廠商容器 -->
+            <div id="supplier-container" class="flex-grow space-y-6"></div>
+
+            <!-- 總計區 -->
+            <div class="mt-8 border-t-4 border-double border-gray-800 pt-6">
+                <div class="flex flex-col items-end gap-2">
+                    <div class="text-right text-gray-500 text-xs">
+                        <p>進貨總品項：<span id="total-items-count" class="font-bold text-black font-num">0</span></p>
+                        <p>廠商總數：<span id="total-suppliers-count" class="font-bold text-black font-num">0</span></p>
+                    </div>
+                    <div class="bg-gray-100 px-6 py-4 rounded border border-gray-200 text-right shadow-inner w-full md:w-auto">
+                        <p class="text-xs text-gray-500 mb-1">本次進貨總金額</p>
+                        <p class="text-4xl font-bold text-[#8B3A3A] font-num">NT$ <span id="grand-total">0</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="mt-8 text-[10px] text-gray-400 text-center border-t border-gray-100 pt-4">
+                平凡五金行 內部採購系統 | SAKE by ORG
+            </footer>
+        </div>
+    </div>
+
+    <!-- 隱藏的列印容器 -->
+    <div id="print-container"></div>
+
+    <!-- 圖片結果彈窗 -->
+    <div id="img-modal">
+        <div class="text-white text-center mb-4">
+            <h3 class="text-lg font-bold text-yellow-400">圖片已生成 (V8)</h3>
+            <p class="text-xs text-gray-300">長按圖片儲存</p>
+            <button onclick="document.getElementById('img-modal').style.display='none'" class="mt-2 bg-gray-600 px-4 py-1 rounded text-xs">關閉</button>
+        </div>
+        <img id="generated-img" src="" alt="Result">
+        <div class="h-20"></div>
+    </div>
+
+    <script>
+        // V8: 新增 store 欄位
+        let orderData = { date: new Date().toISOString().split('T')[0], store: '四維店', user: '小橘', suppliers: [] };
+        const SIZE_OPTIONS = ['720ml', '1800ml', '300ml', '500ml', '其他'];
+
+        window.onload = () => {
+            loadData();
+            if (orderData.suppliers.length === 0) addNewSupplier();
+            document.getElementById('order-user').value = orderData.user || '小橘';
+            
+            // 初始化店別按鈕狀態
+            setStore(orderData.store || '四維店');
+            render();
+        };
+
+        // --- V8: 店別設定函數 ---
+        function setStore(storeName) {
+            orderData.store = storeName;
+            
+            // 更新按鈕樣式
+            const btnSiwei = document.getElementById('btn-siwei');
+            const btnBeigao = document.getElementById('btn-beigao');
+            
+            if(storeName === '四維店') {
+                btnSiwei.classList.add('active');
+                btnBeigao.classList.remove('active');
+            } else {
+                btnSiwei.classList.remove('active');
+                btnBeigao.classList.add('active');
+            }
+            saveData();
+        }
+
+        /* === 資料操作 (與 V7 相同) === */
+        function addNewSupplier() {
+            orderData.suppliers.push({ id: Date.now(), name: "", items: [{ id: Date.now()+1, name: "", size: "720ml", cost: "", qty: "" }] });
+            render(); saveData();
+            setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 100);
+        }
+        function removeSupplier(id) {
+            if(confirm("刪除此廠商？")) { orderData.suppliers = orderData.suppliers.filter(s => s.id !== id); render(); saveData(); }
+        }
+        function addItem(sId) {
+            const s = orderData.suppliers.find(s => s.id === sId);
+            if(s) {
+                const lastSize = s.items.length > 0 ? s.items[s.items.length-1].size : "720ml";
+                s.items.push({ id: Date.now(), name: "", size: lastSize, cost: "", qty: "" });
+                render(); saveData();
+            }
+        }
+        function removeItem(sId, iId) {
+            const s = orderData.suppliers.find(s => s.id === sId);
+            if(s && s.items.length > 1) { s.items = s.items.filter(i => i.id !== iId); render(); saveData(); }
+        }
+        function updateData(sId, iId, field, val, isSName=false) {
+            const s = orderData.suppliers.find(s => s.id === sId);
+            if(isSName) { s.name = val; } 
+            else {
+                const item = s.items.find(i => i.id === iId);
+                item[field] = (field==='cost'||field==='qty') ? (val===''? '' : Number(val)) : val;
+            }
+            saveData(); updateCalc();
+        }
+
+        /* === UI 渲染 === */
+        function updateCalc() {
+            let grand = 0;
+            orderData.suppliers.forEach(s => {
+                let sTotal = 0;
+                s.items.forEach(i => {
+                    const sub = (Number(i.cost)||0) * (Number(i.qty)||0);
+                    sTotal += sub;
+                    const el = document.getElementById(`sub-${i.id}`);
+                    if(el) el.innerText = '$' + sub.toLocaleString();
+                });
+                const sEl = document.getElementById(`stotal-${s.id}`);
+                if(sEl) sEl.innerText = '$' + sTotal.toLocaleString();
+                grand += sTotal;
+            });
+            document.getElementById('grand-total').innerText = grand.toLocaleString();
+            document.getElementById('total-badge').innerText = `總計: $${grand.toLocaleString()}`;
+        }
+
+        function render() {
+            const c = document.getElementById('supplier-container');
+            c.innerHTML = '';
+            let totalItems = 0;
+
+            orderData.suppliers.forEach(s => {
+                let sTotal = 0;
+                let rows = '';
+
+                s.items.forEach(i => {
+                    const sub = (Number(i.cost)||0) * (Number(i.qty)||0);
+                    sTotal += sub;
+                    totalItems++;
+                    
+                    const opts = SIZE_OPTIONS.map(o => `<option value="${o}" ${i.size===o?'selected':''}>${o}</option>`).join('');
+
+                    rows += `
+                        <div class="grid grid-cols-12 gap-2 items-center mb-2 border-b border-dashed border-gray-200 pb-3 group">
+                            <!-- 手機版佈局 -->
+                            <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
+                                <label class="text-[10px] text-gray-400 md:hidden">品名/規格</label>
+                                <input type="text" value="${i.name}" placeholder="輸入名稱" class="font-bold text-gray-800 bg-gray-50 p-2 rounded w-full border border-gray-200" oninput="updateData(${s.id}, ${i.id}, 'name', this.value)">
+                                <select class="text-xs bg-gray-100 p-1 rounded w-full md:w-auto" onchange="updateData(${s.id}, ${i.id}, 'size', this.value)">${opts}</select>
+                            </div>
+                            <div class="col-span-4 md:col-span-2">
+                                <label class="text-[10px] text-gray-400 md:hidden">單價</label>
+                                <input type="number" value="${i.cost}" placeholder="$0" class="text-right bg-gray-50 p-2 rounded w-full font-num border border-gray-200" oninput="updateData(${s.id}, ${i.id}, 'cost', this.value)">
+                            </div>
+                            <div class="col-span-3 md:col-span-2">
+                                <label class="text-[10px] text-gray-400 md:hidden">數量</label>
+                                <input type="number" value="${i.qty}" placeholder="1" class="text-center bg-gray-50 p-2 rounded w-full font-num border border-gray-200" oninput="updateData(${s.id}, ${i.id}, 'qty', this.value)">
+                            </div>
+                            <div class="col-span-3 md:col-span-2 text-right">
+                                <label class="text-[10px] text-gray-400 block md:hidden">小計</label>
+                                <div class="font-num font-bold text-gray-800 pt-2 md:pt-0" id="sub-${i.id}">$${sub.toLocaleString()}</div>
+                            </div>
+                            <div class="col-span-2 md:col-span-1 text-center pt-3 md:pt-0">
+                                <button onclick="removeItem(${s.id}, ${i.id})" class="text-red-300 hover:text-red-500"><i class="fas fa-times-circle text-lg"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const card = document.createElement('div');
+                card.className = 'border border-gray-200 rounded-xl p-4 bg-white shadow-sm mb-6';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b-2 border-gray-800 pb-2 mb-2">
+                        <div class="flex items-center gap-2 w-full">
+                            <i class="fas fa-truck text-[#8B3A3A]"></i>
+                            <input type="text" value="${s.name}" placeholder="點擊輸入廠商名稱" class="text-xl font-bold text-[#8B3A3A] w-full bg-transparent placeholder-red-200" oninput="updateData(${s.id}, null, null, this.value, true)">
+                        </div>
+                        <button onclick="removeSupplier(${s.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    </div>
+                    
+                    <div class="hidden md:grid grid-cols-12 gap-2 text-xs text-gray-400 mb-2 px-1">
+                        <div class="col-span-5">品名 & 規格</div>
+                        <div class="col-span-2 text-right">單價</div>
+                        <div class="col-span-2 text-center">數量</div>
+                        <div class="col-span-2 text-right">小計</div>
+                        <div class="col-span-1"></div>
+                    </div>
+
+                    <div class="space-y-1">${rows}</div>
+
+                    <div class="flex justify-between items-center mt-4 pt-2 border-t border-gray-100">
+                        <button onclick="addItem(${s.id})" class="text-blue-600 font-bold text-sm bg-blue-50 px-3 py-1 rounded"><i class="fas fa-plus"></i> 加品項</button>
+                        <div class="text-right text-sm">小計: <span id="stotal-${s.id}" class="font-bold font-num text-lg">$${sTotal.toLocaleString()}</span></div>
+                    </div>
+                `;
+                c.appendChild(card);
+            });
+            
+            updateCalc();
+            document.getElementById('total-items-count').innerText = totalItems;
+            document.getElementById('total-suppliers-count').innerText = orderData.suppliers.length;
+            document.getElementById('order-date').value = orderData.date;
+        }
+
+        function saveData() {
+            orderData.date = document.getElementById('order-date').value;
+            orderData.user = document.getElementById('order-user').value;
+            // V8: 儲存時，store 已經在 setStore 更新
+            localStorage.setItem('po_data_v8', JSON.stringify(orderData));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('po_data_v8');
+            if(saved) {
+                try { 
+                    orderData = JSON.parse(saved);
+                    orderData.suppliers.forEach(s => s.items.forEach(i => { if(!i.size) i.size = "720ml"; }));
+                    if(!orderData.store) orderData.store = '四維店';
+                } catch(e) {}
+            }
+        }
+        function clearAllData() { if(confirm("確定清空所有資料？")) { localStorage.removeItem('po_data_v8'); location.reload(); } }
+
+
+        /* === 核心：出圖生成引擎 (V8 Update) === */
+        async function generateImage() {
+            const btn = document.querySelector('button[onclick="generateImage()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
+            
+            await document.fonts.ready;
+
+            const p = document.getElementById('print-container');
+            let grandTotal = 0;
+            
+            // V8 更新：標題區塊，顯示店別，隱藏單號
+            let html = `
+                <div class="print-header">
+                    <div>
+                        <!-- Flex container for Title + Store -->
+                        <div style="display: flex; align-items: baseline; gap: 15px; margin-bottom: 10px;">
+                            <h1 style="font-size: 48px; font-weight: bold; margin: 0;">酒類下單表</h1>
+                            <span style="font-size: 28px; font-weight: bold; color: #8B3A3A;">${orderData.store}</span>
+                        </div>
+                        <div style="font-size: 18px; color: #555; font-weight: bold;">
+                            日期：<span style="font-family: Arial;">${orderData.date}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <!-- 單號已移除 -->
+                        <div style="font-size: 16px; color: #666; margin-bottom: 5px;"></div>
+                        <div style="font-size: 16px; color: #666;">填單人：<span style="font-weight: bold; color: black; border-bottom: 1px solid #ccc; padding-bottom: 2px;">${orderData.user}</span></div>
+                    </div>
+                </div>
+            `;
+
+            // 表格生成邏輯 (與 V7 相同)
+            orderData.suppliers.forEach(s => {
+                let sTotal = 0;
+                let rows = '';
+                
+                s.items.forEach(i => {
+                    const cost = Number(i.cost) || 0;
+                    const qty = Number(i.qty) || 0;
+                    const sub = cost * qty;
+                    sTotal += sub;
+                    
+                    rows += `
+                        <tr>
+                            <td style="width: 35%; padding-left: 5px;">${i.name || ''}</td>
+                            <td style="width: 15%; text-align: center; color: #555; font-size: 14px;">${i.size}</td>
+                            <td style="width: 15%; text-align: right; font-family: Arial;">${cost ? '$'+cost.toLocaleString() : ''}</td>
+                            <td style="width: 10%; text-align: center; font-family: Arial;">${qty || ''}</td>
+                            <td style="width: 25%; text-align: right; font-weight: bold; font-family: Arial; padding-right: 5px;">$${sub.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                grandTotal += sTotal;
+
+                html += `
+                    <div style="margin-bottom: 40px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #8B3A3A; margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">
+                            <i class="fas fa-truck"></i> ${s.name}
+                        </div>
+                        <table class="print-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%;">品名</th>
+                                    <th style="width: 15%; text-align: center;">規格</th>
+                                    <th style="width: 15%; text-align: right;">單價</th>
+                                    <th style="width: 10%; text-align: center;">數量</th>
+                                    <th style="width: 25%; text-align: right;">總價</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                        <div style="text-align: right; font-size: 18px; font-weight: bold; border-top: 2px solid #eee; padding-top: 10px;">
+                            廠商小計：<span style="font-family: Arial; color: #8B3A3A;">$${sTotal.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="margin-top: 50px; border-top: 4px double #333; padding-top: 20px; text-align: right;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 5px;">本次進貨總金額</div>
+                    <div style="font-size: 48px; font-weight: bold; color: #8B3A3A; font-family: Arial;">NT$ ${grandTotal.toLocaleString()}</div>
+                </div>
+                <div style="text-align: center; margin-top: 40px; color: #ccc; font-size: 12px; border-top: 1px solid #eee; padding-top: 10px;">
+                    平凡五金行 內部採購系統 | Generated by ORG
+                </div>
+            `;
+
+            p.innerHTML = html;
+
+            try {
+                const canvas = await html2canvas(p, {
+                    scale: 2, useCORS: true, backgroundColor: '#ffffff',
+                    width: 900, windowWidth: 900
+                });
+                document.getElementById('generated-img').src = canvas.toDataURL("image/jpeg", 0.95);
+                document.getElementById('img-modal').style.display = 'flex';
+            } catch(e) { console.error(e); alert("出圖失敗"); }
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        }
+    </script>
+</body>
+</html>
