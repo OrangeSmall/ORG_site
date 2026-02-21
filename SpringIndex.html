@@ -206,6 +206,7 @@
     .i3 { background: linear-gradient(135deg, #c3bef0, #e9e7ff); }
     .i4 { background: linear-gradient(135deg, #b5ead7, #d7fff1); }
     .i5 { background: linear-gradient(135deg, #f9c5d1, #ffe2ea); }
+    .i6 { background: linear-gradient(135deg, #ffe29a, #fff4cc); }
 
     .content {
       min-width: 0;
@@ -396,7 +397,7 @@
       <h2 class="lock-title">春酒活動入口</h2>
       <p class="lock-subtitle">
         請輸入密碼後進入工具站<br>
-        （手機檢視友善）
+        （手機閱讀友善）
       </p>
 
       <div class="field">
@@ -426,7 +427,7 @@
       <div class="badge">🍻 春酒活動入口工具</div>
       <h1>春酒活動工具站</h1>
       <div class="subtitle">
-        流程、規則、秘密任務與現場資訊入口整合（手機閱覽友善）
+        流程、規則、秘密任務與現場資訊入口整合（手機閱讀友善）
       </div>
     </section>
 
@@ -435,7 +436,7 @@
         <div class="icon i1">📌</div>
         <div class="content">
           <p class="title">春酒流程大綱</p>
-          <p class="desc">查看整體活動安排與節奏</p>
+          <p class="desc">快速查看整體活動安排與節奏</p>
         </div>
         <div class="arrow">›</div>
       </a>
@@ -453,7 +454,7 @@
         <div class="icon i3">🕵️</div>
         <div class="content">
           <p class="title">秘密任務說明／統計工具</p>
-          <p class="desc">秘密任務活動內容與統計頁整合</p>
+          <p class="desc">任務內容與統計頁面整合入口</p>
         </div>
         <div class="arrow">›</div>
       </a>
@@ -461,7 +462,7 @@
       <div class="card card-disabled" aria-disabled="true">
         <div class="icon i4">🗂️</div>
         <div class="content">
-          <p class="title">春酒流程（夥伴用）</p>
+          <p class="title">春酒流程</p>
           <p class="desc">詳細流程版（維修中）</p>
         </div>
         <div class="status-tag">維修中</div>
@@ -470,20 +471,20 @@
       <div class="card card-disabled" aria-disabled="true">
         <div class="icon i5">🪑</div>
         <div class="content">
-          <p class="title">現場座位／分組表（夥伴用）</p>
+          <p class="title">現場座位／分組表</p>
           <p class="desc">座位配置與分組資訊（維修中）</p>
         </div>
         <div class="status-tag">維修中</div>
       </div>
 
       <div class="card card-disabled" aria-disabled="true">
-  <div class="icon i1">📝</div>
-  <div class="content">
-    <p class="title">準備與代辦清單</p>
-    <p class="desc">活動前置準備與待辦事項整理（目前編輯中）</p>
-  </div>
-  <div class="status-tag">編輯中</div>
-</div>
+        <div class="icon i6">📝</div>
+        <div class="content">
+          <p class="title">準備與代辦清單</p>
+          <p class="desc">活動前置準備與待辦事項整理（編輯中）</p>
+        </div>
+        <div class="status-tag">編輯中</div>
+      </div>
     </nav>
 
     <div class="footer">
@@ -508,7 +509,6 @@
         sessionStorage.setItem(SESSION_KEY, "ok");
         body.classList.add("authenticated");
         errorMsg.textContent = "";
-        // 清掉輸入框內容避免誤留
         if (input) input.value = "";
       }
 
@@ -539,13 +539,11 @@
         }
       }
 
-      // 先檢查是否已驗證
       const isAuthed = sessionStorage.getItem(SESSION_KEY) === "ok";
       if (isAuthed) {
         body.classList.add("authenticated");
       } else {
         body.classList.remove("authenticated");
-        // 避免某些手機瀏覽器載入時尚未完成渲染
         window.addEventListener("load", () => {
           setTimeout(() => input && input.focus(), 120);
         });
