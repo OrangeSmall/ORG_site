@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>春酒活動入口工具</title>
+  <meta name="theme-color" content="#ff6b6b" />
+  <style>
+    :root {
+      --bg1: #ff7eb3;
+      --bg2: #ff758c;
+      --bg3: #7afcff;
+      --bg4: #ffd166;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text: #2b2b2b;
+      --subtext: #6b7280;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+      --radius: 18px;
+      --accent: #ff6b6b;
+      --accent2: #ff8e53;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #fff7fb 0%, #fffaf0 50%, #f4fbff 100%);
+    }
+
+    body {
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 避免未驗證前先閃出內容 */
+    [data-protected-app] {
+      visibility: hidden;
+    }
+    body.authenticated [data-protected-app] {
+      visibility: visible;
+    }
+
+    /* 活潑背景 */
+    .bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -2;
+      pointer-events: none;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(12px);
+      opacity: 0.45;
+      animation: float 14s ease-in-out infinite;
+    }
+    .blob.b1 {
+      width: 220px; height: 220px; background: var(--bg1);
+      top: -30px; left: -40px;
+      animation-delay: 0s;
+    }
+    .blob.b2 {
+      width: 260px; height: 260px; background: var(--bg3);
+      top: 18%; right: -60px;
+      animation-delay: -4s;
+    }
+    .blob.b3 {
+      width: 240px; height: 240px; background: var(--bg4);
+      bottom: 12%; left: -70px;
+      animation-delay: -8s;
+    }
+    .blob.b4 {
+      width: 280px; height: 280px; background: var(--bg2);
+      bottom: -70px; right: -50px;
+      animation-delay: -2s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0) scale(1); }
+      25% { transform: translateY(-14px) translateX(8px) scale(1.03); }
+      50% { transform: translateY(8px) translateX(-10px) scale(0.98); }
+      75% { transform: translateY(-6px) translateX(6px) scale(1.02); }
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.05;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20% 20%, #000 1px, transparent 1px),
+        radial-gradient(circle at 80% 60%, #000 1px, transparent 1px),
+        radial-gradient(circle at 40% 80%, #000 1px, transparent 1px);
+      background-size: 22px 22px, 26px 26px, 18px 18px;
+    }
+
+    .wrap {
+      width: min(100%, 540px);
+      margin: 0 auto;
+      padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px);
+    }
+
+    .hero {
+      background: rgba(255,255,255,0.76);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 14px rgba(255, 107, 107, 0.35);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--subtext);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card, .card-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: inherit;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-link {
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .card-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.35), rgba(255,255,255,0.0));
+      transform: translateX(-120%);
+      transition: transform .45s ease;
+      pointer-events: none;
+    }
+    .card-link:hover::before { transform: translateX(120%); }
+    .card-link:active {
+      transform: scale(0.985);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    .card-disabled {
+      opacity: 0.85;
+      border-style: dashed;
+      border-color: rgba(120,120,120,0.18);
+      background: rgba(255,255,255,0.72);
+    }
+
+    .icon {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+    }
+    .i1 { background: linear-gradient(135deg, #ffd166, #ffef99); }
+    .i2 { background: linear-gradient(135deg, #7afcff, #c9f9ff); }
+    .i3 { background: linear-gradient(135deg, #c3bef0, #e9e7ff); }
+    .i4 { background: linear-gradient(135deg, #b5ead7, #d7fff1); }
+    .i5 { background: linear-gradient(135deg, #f9c5d1, #ffe2ea); }
+
+    .content {
+      min-width: 0;
+      flex: 1;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin: 0;
+      word-break: break-word;
+    }
+    .desc {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.4;
+    }
+
+    .arrow {
+      margin-left: auto;
+      font-size: 20px;
+      color: #9ca3af;
+      line-height: 1;
+      padding-left: 8px;
+      flex: 0 0 auto;
+    }
+
+    .status-tag {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 800;
+      color: #7c3aed;
+      background: rgba(124, 58, 237, 0.10);
+      border: 1px solid rgba(124, 58, 237, 0.18);
+      padding: 5px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #6b7280;
+      padding: 10px 8px;
+      background: rgba(255,255,255,0.65);
+      border-radius: 14px;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    /* 密碼鎖定畫面 */
+    .lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    body:not(.authenticated) .lock-screen {
+      display: flex;
+    }
+
+    .lock-card {
+      width: min(100%, 420px);
+      background: rgba(255,255,255,0.9);
+      border-radius: 22px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+
+    .lock-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 10px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: linear-gradient(135deg, #ffe08a, #ffc36b);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.8);
+    }
+
+    .lock-title {
+      margin: 0;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .lock-subtitle {
+      margin: 6px 0 14px;
+      text-align: center;
+      color: var(--subtext);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #4b5563;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .field input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+    }
+
+    .lock-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 8px 16px rgba(255, 107, 107, 0.28);
+    }
+
+    .btn-secondary {
+      color: #374151;
+      background: #f3f4f6;
+    }
+
+    .error-msg {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #dc2626;
+      min-height: 18px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    @media (min-width: 520px) {
+      .menu { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="blob b4"></div>
+  </div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- 密碼鎖定畫面 -->
+  <section class="lock-screen" id="lockScreen" aria-label="密碼驗證">
+    <div class="lock-card">
+      <div class="lock-icon">🔒</div>
+      <h2 class="lock-title">春酒活動入口</h2>
+      <p class="lock-subtitle">
+        請輸入密碼後進入工具站<br>
+        （手機檢視友善）
+      </p>
+
+      <div class="field">
+        <label for="passwordInput">輸入密碼</label>
+        <input
+          id="passwordInput"
+          type="password"
+          inputmode="numeric"
+          placeholder="請輸入密碼"
+          autocomplete="off"
+          enterkeyhint="done"
+        />
+      </div>
+
+      <div class="lock-actions">
+        <button class="btn btn-primary" id="unlockBtn" type="button">進入工具站</button>
+        <button class="btn btn-secondary" id="clearSessionBtn" type="button">重新驗證</button>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+  </section>
+
+  <!-- 受保護內容 -->
+  <main class="wrap" data-protected-app>
+    <section class="hero">
+      <div class="badge">🍻 春酒活動入口工具</div>
+      <h1>春酒活動工具站</h1>
+      <div class="subtitle">
+        流程、規則、秘密任務與現場資訊入口整合（手機閱覽友善）
+      </div>
+    </section>
+
+    <nav class="menu" aria-label="春酒活動功能選單">
+      <a class="card-link" href="https://orangesmall.github.io/ORG_site/spring.html" target="_blank" rel="noopener">
+        <div class="icon i1">📌</div>
+        <div class="content">
+          <p class="title">春酒流程大綱</p>
+          <p class="desc">查看整體活動安排與節奏</p>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+
+      <a class="card-link" href="https://orangesmall.github.io/ORG_site/SpringActivity.html" target="_blank" rel="noopener">
+        <div class="icon i2">🎮</div>
+        <div class="content">
+          <p class="title">遊戲活動規則</p>
+          <p class="desc">活動玩法、規範與注意事項</p>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+
+      <a class="card-link" href="https://orangesmall.github.io/ORG_site/SPsecret.html" target="_blank" rel="noopener">
+        <div class="icon i3">🕵️</div>
+        <div class="content">
+          <p class="title">秘密任務說明／統計工具</p>
+          <p class="desc">秘密任務活動內容與統計頁整合</p>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+
+      <div class="card card-disabled" aria-disabled="true">
+        <div class="icon i4">🗂️</div>
+        <div class="content">
+          <p class="title">春酒流程（夥伴用）</p>
+          <p class="desc">詳細流程版（維修中）</p>
+        </div>
+        <div class="status-tag">維修中</div>
+      </div>
+
+      <div class="card card-disabled" aria-disabled="true">
+        <div class="icon i5">🪑</div>
+        <div class="content">
+          <p class="title">現場座位／分組表（夥伴用）</p>
+          <p class="desc">座位配置與分組資訊（維修中）</p>
+        </div>
+        <div class="status-tag">維修中</div>
+      </div>
+    </nav>
+
+    <div class="footer">
+      ✨ 肝只有一個，編輯中部份請耐心等候 ✨
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      // ====== 可調整區 ======
+      const PASSWORD = "4091"; // 春酒入口密碼
+      const SESSION_KEY = "spring_banquet_auth_ok_v1";
+      // =====================
+
+      const body = document.body;
+      const input = document.getElementById("passwordInput");
+      const unlockBtn = document.getElementById("unlockBtn");
+      const clearSessionBtn = document.getElementById("clearSessionBtn");
+      const errorMsg = document.getElementById("errorMsg");
+
+      function setAuthenticated() {
+        sessionStorage.setItem(SESSION_KEY, "ok");
+        body.classList.add("authenticated");
+        errorMsg.textContent = "";
+        // 清掉輸入框內容避免誤留
+        if (input) input.value = "";
+      }
+
+      function clearAuth() {
+        sessionStorage.removeItem(SESSION_KEY);
+        body.classList.remove("authenticated");
+        errorMsg.textContent = "已清除驗證狀態，請重新輸入密碼。";
+        if (input) {
+          input.value = "";
+          setTimeout(() => input.focus(), 50);
+        }
+      }
+
+      function checkPassword() {
+        const value = (input.value || "").trim();
+
+        if (!value) {
+          errorMsg.textContent = "請先輸入密碼。";
+          input.focus();
+          return;
+        }
+
+        if (value === PASSWORD) {
+          setAuthenticated();
+        } else {
+          errorMsg.textContent = "密碼錯誤，請再試一次。";
+          input.select();
+        }
+      }
+
+      // 先檢查是否已驗證
+      const isAuthed = sessionStorage.getItem(SESSION_KEY) === "ok";
+      if (isAuthed) {
+        body.classList.add("authenticated");
+      } else {
+        body.classList.remove("authenticated");
+        // 避免某些手機瀏覽器載入時尚未完成渲染
+        window.addEventListener("load", () => {
+          setTimeout(() => input && input.focus(), 120);
+        });
+      }
+
+      unlockBtn.addEventListener("click", checkPassword);
+      clearSessionBtn.addEventListener("click", clearAuth);
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          checkPassword();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
