@@ -12,10 +12,8 @@
       --muted:#6b6b6b;
       --line:#e7e1d7;
       --accent:#8b5e3c;
-      --accent2:#b07a53;
       --good:#1f7a3a;
       --warn:#a35d00;
-      --danger:#9b1c1c;
     }
     *{box-sizing:border-box}
     body{
@@ -33,6 +31,27 @@
     }
     h1{margin:0 0 6px; font-size:20px; letter-spacing:.5px}
     .sub{margin:0; color:var(--muted); font-size:13px}
+    .printbar{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+      margin-top:10px;
+    }
+    button{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    button:hover{border-color:#d7c9b8}
+    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .pill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); background:#fff;
+      font-size:12px; color:var(--muted);
+    }
+    .dot{width:8px; height:8px; border-radius:50%; background:var(--accent)}
     .grid{
       display:grid;
       grid-template-columns: 1.1fr .9fr;
@@ -48,19 +67,22 @@
       box-shadow:0 8px 22px rgba(0,0,0,.04);
     }
     .card h2{margin:0 0 10px; font-size:16px}
-    .pillrow{display:flex; flex-wrap:wrap; gap:8px}
-    .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid var(--line); background:#fff;
-      font-size:12px; color:var(--muted);
-    }
-    .dot{width:8px; height:8px; border-radius:50%; background:var(--accent)}
     .kvs{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
     .kv{border:1px dashed var(--line); border-radius:12px; padding:10px; background:#fffdfb}
     .kv b{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
     .kv .lines{font-size:14px}
     .kv .lines div{display:block; margin:2px 0}
+    .mini{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
+      color:var(--muted); font-size:12px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px; border-radius:12px;
+      border:1px solid var(--line); background:#fffdfb;
+    }
+    .badge.good .dot{background:var(--good)}
+    .badge.warn .dot{background:var(--warn)}
     .table{
       width:100%; border-collapse:separate; border-spacing:0;
       overflow:hidden; border-radius:14px; border:1px solid var(--line);
@@ -96,34 +118,9 @@
     .hint{color:var(--muted); font-size:12px; margin:8px 0 0}
     .list{margin:8px 0 0; padding-left:18px; color:#2a2a2a; font-size:13px}
     .list li{margin:4px 0}
-    .mini{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
-      color:var(--muted); font-size:12px;
-    }
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:12px;
-      border:1px solid var(--line); background:#fffdfb;
-    }
-    .badge.good .dot{background:var(--good)}
-    .badge.warn .dot{background:var(--warn)}
-    .badge.danger .dot{background:var(--danger)}
     .footer{
       margin-top:14px; color:var(--muted); font-size:12px; text-align:center;
     }
-    .printbar{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-      margin-top:10px;
-    }
-    button{
-      border:1px solid var(--line);
-      background:#fff;
-      border-radius:12px;
-      padding:8px 10px;
-      font-size:12px;
-      cursor:pointer;
-    }
-    button:hover{border-color:#d7c9b8}
     @media print{
       body{background:#fff}
       header, .card{box-shadow:none}
@@ -139,7 +136,7 @@
 
     <header>
       <h1>春酒團康｜流程大綱</h1>
-      <p class="sub">用餐時間：18:00–21:30｜室內海鮮餐廳｜約40人（4桌×10人）｜桌隊積分＋亂數抽獎＋兩大主遊戲</p>
+      <p class="sub">用餐時間：18:00–21:30｜室內海鮮餐廳｜約40人（4桌×10人）｜桌隊積分＋兩大主遊戲＋壓軸結算與亂數紅包抽獎</p>
 
       <div class="printbar">
         <button onclick="window.print()">列印 / 存成 PDF</button>
@@ -147,16 +144,15 @@
         <button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">全部收合</button>
       </div>
 
-      <div class="pillrow" style="margin-top:10px;">
-        <span class="pill"><span class="dot"></span>座位編號參與（每桌指定號碼上場）</span>
-        <span class="pill"><span class="dot"></span>亂數抽獎不超過40分鐘（開場後前段完成）</span>
-        <span class="pill"><span class="dot"></span>兩大主遊戲：猜歌王＋321站邊</span>
+      <div class="pillrow">
+        <span class="pill"><span class="dot"></span>座位編號參與（每桌指定號碼）</span>
+        <span class="pill"><span class="dot"></span>代替或重複上台：該項獎金減半</span>
         <span class="pill"><span class="dot"></span>秘密小任務：全桌可協助，桌長回報</span>
+        <span class="pill"><span class="dot"></span>20:30–21:30 壓軸：獎金池結算＋亂數紅包抽獎</span>
       </div>
     </header>
 
     <div class="grid">
-      <!-- Left: Overview -->
       <section class="card">
         <h2>一、活動方向 可回報重點</h2>
 
@@ -169,6 +165,7 @@
               <div>現金／非現金</div>
             </div>
           </div>
+
           <div class="kv">
             <b>互動設計</b>
             <div class="lines">
@@ -177,20 +174,22 @@
               <div>降低個人壓力</div>
             </div>
           </div>
+
           <div class="kv">
-            <b>發獎節奏</b>
+            <b>積分與呈現</b>
             <div class="lines">
-              <div>前段：亂數抽獎（≤40分鐘）</div>
-              <div>中段：段落獎穿插</div>
-              <div>尾段：桌隊排名大獎＋抽獎壓軸</div>
+              <div>桌隊積分累積到最後</div>
+              <div>積分板：白板／海報紙／投影</div>
+              <div>可讓全場即時看到排名</div>
             </div>
           </div>
+
           <div class="kv">
-            <b>控場原則</b>
+            <b>壓軸節奏</b>
             <div class="lines">
-              <div>10–15 分鐘一段主活動</div>
-              <div>3–5 分鐘出一次亮點或加分點</div>
-              <div>上菜優先，活動可隨時暫停再接回</div>
+              <div>先結算今日獎金池成績</div>
+              <div>再進行亂數紅包抽獎</div>
+              <div>整段抓 1 小時：20:30–21:30</div>
             </div>
           </div>
         </div>
@@ -199,25 +198,22 @@
           <summary>座位編號參與規則</summary>
           <ul class="list">
             <li>每桌座位編號 1–10（由桌長快速分配或依座位順序）。</li>
-            <li>活動參與以「每桌指定幾個號碼」上場/作答為主（例如：每桌 2 號與 7 號）。</li>
-            <li><b>代替或重複上台</b>：該項獎金減半（可用來鼓勵輪替、讓更多人自然參與）。</li>
-            <li>不點名個人，只點「桌號＋座位編號」，降低壓力也更公平。</li>
+            <li>活動參與以「每桌指定幾個號碼」上場/作答為主。</li>
+            <li><b>代替或重複上台</b>：該項獎金減半，鼓勵輪替與公平。</li>
+            <li>主持只點「桌號＋座位編號」，不直接點名個人。</li>
           </ul>
         </details>
 
         <details>
-          <summary>友善主持口訣</summary>
+          <summary>內向友善主持口訣</summary>
           <ul class="list">
-            <li>只點「桌號＋座位編號」，不直接點名個人。</li>
-            <li>問題以二選一（O/X、A/B）為主，避免開放式冷場。</li>
+            <li>題型以二選一為主（O/X、A/B），避免開放式冷場。</li>
             <li>集體動作取代個人發言：全場一起比手勢/舉杯/拍手。</li>
-            <li>小獎發放密度提高：每段都有人拿到或加分。</li>
+            <li>上菜優先，活動可暫停再接回，不硬推流程。</li>
           </ul>
-          <p class="hint">※ 核心：讓參與變成「輪到某個號碼」而不是「被叫出去表演」。</p>
         </details>
       </section>
 
-      <!-- Right: Quick Checklist -->
       <aside class="card">
         <h2>二、道具與人力快檢</h2>
 
@@ -232,34 +228,24 @@
           <summary>必備清單</summary>
           <ul class="list">
             <li>桌牌/桌號（4桌）＋桌長識別（貼紙/小卡）</li>
-            <li>座位編號卡（每桌 1–10，可用小紙條/貼紙快速完成）</li>
+            <li>座位編號卡（每桌 1–10，可用貼紙/小紙條）</li>
             <li>秘密任務卡（只發桌長，任務需讓全桌可協助）</li>
             <li><b>積分板</b>：白板／海報紙／投影（擇一）＋記號筆</li>
-            <li>獎項事先分袋：小獎/段落獎/壓軸（發放更順）</li>
+            <li>獎項分袋：段落獎、桌隊獎、抽獎大獎（發放更順）</li>
           </ul>
         </details>
 
         <details>
           <summary>人力分工 最少配置</summary>
           <ul class="list">
-            <li>主持人 1：流程、氣氛、口條、控音量</li>
+            <li>主持人 1：流程、氣氛、控音量</li>
             <li>活動人員 1：記分、遞麥、發獎、收任務回報、操作亂數抽獎</li>
             <li>可加協助 1：播歌/控音量/拍照/機動支援</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>餐廳控場原則</summary>
-          <ul class="list">
-            <li>猜歌僅桌長或指定號碼作答，避免全場喊叫。</li>
-            <li>站邊採每桌代表輪換，不做全員離席。</li>
-            <li>上菜打斷時：先回到用餐，下一段再接回活動。</li>
           </ul>
         </details>
       </aside>
     </div>
 
-    <!-- Flow -->
     <section class="card" style="margin-top:14px;">
       <h2>三、流程大綱 18:00–21:30</h2>
 
@@ -267,11 +253,12 @@
         <thead>
           <tr>
             <th style="width:130px;">時間</th>
-            <th style="width:210px;">環節</th>
+            <th style="width:220px;">環節</th>
             <th>內容重點（簡化）</th>
-            <th style="width:220px;">目的與發獎點</th>
+            <th style="width:240px;">目的與發獎點</th>
           </tr>
         </thead>
+
         <tbody>
           <tr>
             <td>18:00–18:15</td>
@@ -282,114 +269,101 @@
               <span class="tag">秘密任務交付桌長</span>
             </td>
             <td>
-              先完成座位編號制度<br/>
-              讓後續參與更公平好控
+              建立座位編號制度<br/>
+              任務先啟動桌內互動
             </td>
           </tr>
 
           <tr>
-            <td>18:15–18:25</td>
-            <td><b>開場與規則</b></td>
+            <td>18:15–18:40</td>
+            <td><b>開場講解＋企業主發言</b></td>
             <td>
-              桌隊制、積分板說明<br/>
-              宣布：代替或重複上台，該項獎金減半<br/>
-              每桌 10 秒隊名＋手勢
-            </td>
-            <td>快速進狀態、降低內向壓力</td>
-          </tr>
-
-          <tr>
-            <td>18:25–19:05</td>
-            <td><b>亂數抽獎環節</b></td>
-            <td>
-              以桌號＋座位編號做亂數抽出得主<br/>
-              現金與非現金穿插發放<br/>
-              全段控制在 40 分鐘內
+              活動規則說明、桌隊制、積分板說明<br/>
+              宣布參與原則與獎金重點<br/>
+              企業主發言（約 10 分鐘）
             </td>
             <td>
-              延續往年抽紅包傳統但更有效率<br/>
-              前段快速帶起參與感
+              完整建立活動共識<br/>
+              讓現場節奏更穩定
             </td>
           </tr>
 
           <tr>
-            <td>19:05–19:25</td>
-            <td><b>主遊戲① 猜歌王</b></td>
+            <td>18:40–19:00</td>
+            <td><b>主遊戲① 牆頭草321站邊</b></td>
             <td>
-              以桌隊搶答為主<br/>
-              可指定每題由「每桌某號碼」回答（輪替）<br/>
-              每 3 題一次小獎點
-            </td>
-            <td>
-              嗨度拉起來、桌隊累積分<br/>
-              段落獎：猜歌冠軍桌
-            </td>
-          </tr>
-
-          <tr>
-            <td>19:25–20:15</td>
-            <td><b>用餐主段＋穿插</b></td>
-            <td>
-              以吃飯為主，穿插 2 次短互動（每次 ≤3 分鐘）<br/>
-              開放秘密任務回報窗口
-            </td>
-            <td>
-              不打斷用餐但維持熱度<br/>
-              小獎或加分點穿插
-            </td>
-          </tr>
-
-          <tr>
-            <td>20:15–20:35</td>
-            <td><b>主遊戲② 321站邊</b></td>
-            <td>
-              每桌派 2 位代表站邊（輪換制）<br/>
-              可用指定號碼上場（例如每桌 3 號與 8 號）<br/>
+              飯前先暖身、稍微動一動<br/>
+              每桌派代表參與（可依座位編號指定）<br/>
               O/X 站邊題
             </td>
             <td>
-              視覺效果強、好笑好控場<br/>
+              快速拉起氣氛與參與感<br/>
               段落獎：站邊王＋氣氛獎
             </td>
           </tr>
 
           <tr>
-            <td>20:35–20:50</td>
-            <td><b>秘密任務結算</b></td>
+            <td>19:00–19:45</td>
+            <td><b>用餐與交流 主段一</b></td>
             <td>
-              彙整桌長回報<br/>
-              公布：完成桌隊加分/得獎<br/>
-              不公開任務細節
+              以吃飯為主、主持人輕串場<br/>
+              秘密任務持續進行中
+            </td>
+            <td>讓大家先舒服吃、維持互動熱度</td>
+          </tr>
+
+          <tr>
+            <td>19:45–20:10</td>
+            <td><b>主遊戲② 猜歌王</b></td>
+            <td>
+              桌隊搶答（桌長作答）<br/>
+              可經隊員討論後作答<br/>
+              每 3 題一次小獎點
             </td>
             <td>
-              回收入座前互動成果<br/>
-              加分與小獎發放點
+              中段拉高嗨度與專注度<br/>
+              段落獎：猜歌冠軍桌
             </td>
           </tr>
 
           <tr>
-            <td>20:50–21:10</td>
-            <td><b>機動段落</b></td>
+            <td>20:10–20:30</td>
+            <td><b>用餐與交流 主段二</b></td>
             <td>
-              視現場決定：補強小遊戲或自由敬酒/串場<br/>
-              若餐廳節奏忙 → 直接保留給用餐與交流
+              以用餐為主，收尾主遊戲節奏<br/>
+              開放秘密任務回報窗口與記分整理
             </td>
             <td>
-              彈性緩衝，避免趕流程<br/>
-              可加發小獎（選用）
+              銜接壓軸段前整理場面<br/>
+              預備獎金池結算
             </td>
           </tr>
 
           <tr>
-            <td>21:10–21:25</td>
-            <td><b>壓軸頒獎與收尾抽獎</b></td>
+            <td>20:30–20:45</td>
+            <td><b>獎金池成績結算</b></td>
             <td>
-              公布桌隊積分排名（桌隊獎）<br/>
-              最後一波加碼抽獎，最大獎放最後
+              秘密任務結算與加分<br/>
+              桌隊積分排名暫定<br/>
+              公布今日獎金池成績（桌隊獎）
             </td>
             <td>
-              儀式感與收束<br/>
-              大獎集中發放
+              先把競賽結果收束<br/>
+              桌隊獎金發放點
+            </td>
+          </tr>
+
+          <tr>
+            <td>20:45–21:25</td>
+            <td><b>亂數紅包抽獎 大獎段</b></td>
+            <td>
+              原機動段落調整併入抽獎時間<br/>
+              以桌號＋座位編號亂數抽出得主<br/>
+              現金與非現金穿插，最大獎放最後
+            </td>
+            <td>
+              往年紅包抽獎主段<br/>
+              抽獎時間加長、節奏更完整
             </td>
           </tr>
 
@@ -402,127 +376,60 @@
         </tbody>
       </table>
 
-      <p class="hint">備註：若現場想更緊湊 → 縮短機動段落；若上菜較慢 → 延長用餐主段與交流。</p>
+      <p class="hint">備註：若現場節奏緊湊 → 調整遊戲速度；若上菜較慢或活動較快結束 → 部分加碼活動。非活動時間若現場有影音設備，開放唱歌加碼小活動。</p>
     </section>
 
-    <!-- Random Draw -->
     <section class="card" style="margin-top:14px;">
-      <h2>四、亂數抽獎設計 不超過40分鐘</h2>
+      <h2>四、壓軸一小時 20:30–21:30 的安排</h2>
 
       <div class="kvs">
         <div class="kv">
-          <b>抽獎依據</b>
+          <b>20:30–20:45</b>
           <div class="lines">
-            <div>桌號 1–4</div>
-            <div>座位編號 1–10</div>
-            <div>亂數抽出得主</div>
+            <div>秘密任務結算</div>
+            <div>桌隊積分結算</div>
+            <div>今日獎金池成績公布與發放</div>
           </div>
         </div>
         <div class="kv">
-          <b>獎項混搭</b>
+          <b>20:45–21:25</b>
           <div class="lines">
-            <div>現金紅包</div>
-            <div>非現金獎項</div>
-            <div>可穿插小加碼</div>
+            <div>亂數紅包抽獎主段</div>
+            <div>現金與非現金穿插</div>
+            <div>最大獎最後 1–2 筆</div>
           </div>
         </div>
         <div class="kv">
-          <b>輪替規則</b>
+          <b>21:25–21:30</b>
           <div class="lines">
-            <div>同一人重複中獎可設「跳過」或「改抽下一位」</div>
-            <div>避免集中在少數人</div>
+            <div>合照</div>
+            <div>感謝</div>
+            <div>散場引導</div>
           </div>
         </div>
         <div class="kv">
-          <b>代替與重複上台</b>
+          <b>抽獎控場要點</b>
           <div class="lines">
-            <div>代替上台或同人重複上台</div>
-            <div><b>該項獎金減半</b></div>
+            <div>只點桌號＋座位編號</div>
+            <div>重複中獎處理依當日規則公告</div>
+            <div>代替或重複上台：該項獎金減半</div>
           </div>
         </div>
       </div>
 
       <details>
-        <summary>主持口條建議（快速不卡）</summary>
+        <summary>抽獎口條建議（快速不卡）</summary>
         <ul class="list">
-          <li>「我們今年改成座位編號抽獎，公平又快速，整段不超過40分鐘。」</li>
-          <li>「抽到的桌號＋座位編號請直接舉手，我們工作人員會遞麥/遞獎。」</li>
-          <li>「提醒：代替上台或重複上台，該項獎金減半，鼓勵大家輪流上來拿喜氣。」</li>
-        </ul>
-      </details>
-    </section>
-
-    <!-- Secret Mission -->
-    <section class="card" style="margin-top:14px;">
-      <h2>五、秘密小任務 機制骨架</h2>
-
-      <div class="kvs">
-        <div class="kv">
-          <b>發放對象</b>
-          <div class="lines">
-            <div>入座前只給桌長</div>
-            <div>每桌 1 張任務卡</div>
-          </div>
-        </div>
-        <div class="kv">
-          <b>保密規則</b>
-          <div class="lines">
-            <div>不可讓別桌知道內容</div>
-            <div>完成後到活動人員處回報</div>
-          </div>
-        </div>
-        <div class="kv">
-          <b>任務設計方向</b>
-          <div class="lines">
-            <div>任務要讓全桌都能協助參與</div>
-            <div>避免上台表演與對全場發言</div>
-          </div>
-        </div>
-        <div class="kv">
-          <b>獎勵建議</b>
-          <div class="lines">
-            <div>完成加分或小獎</div>
-            <div>最快完成可加碼</div>
-            <div>保密成功再加分</div>
-          </div>
-        </div>
-      </div>
-
-      <details>
-        <summary>回報方式（擇一）</summary>
-        <ul class="list">
-          <li>口頭驗證（最快）</li>
-          <li>拍照回報（視餐廳情況）</li>
-          <li>交付紙條成果（例如：一句祝福/年度關鍵字）</li>
-        </ul>
-      </details>
-    </section>
-
-    <!-- Host Tips -->
-    <section class="card" style="margin-top:14px;">
-      <h2>六、主持控場備忘</h2>
-
-      <details open>
-        <summary>冷場救句（內向友善）</summary>
-        <ul class="list">
-          <li>「我只點桌號與座位編號，不會突然點名個人，大家放心。」</li>
-          <li>「這題只要 O 或 X，跟直覺走就好，錯了也沒關係。」</li>
-          <li>「我們鼓勵輪流上台，代替或重複上台該項獎金減半，讓大家都有機會拿喜氣。」</li>
-        </ul>
-      </details>
-
-      <details>
-        <summary>避免失控（音量與走動）</summary>
-        <ul class="list">
-          <li>猜歌僅允許指定號碼或桌長作答，其他桌不可喊答案。</li>
-          <li>站邊採每桌代表輪替，不做全員離席。</li>
-          <li>上菜優先：活動可暫停，下一段再接回，流程不硬推。</li>
+          <li>「我們先把今天的獎金池成績結算完，接著進入年度紅包抽獎主段。」</li>
+          <li>「抽到的桌號＋座位編號請直接舉手，工作人員會協助遞獎。」</li>
+          <li>「提醒：代替或重複上台，該項獎金減半，鼓勵大家輪流上來拿喜氣。」</li>
+          <li>「最後 1–2 筆是今晚最大獎，我們放在最後抽。」</li>
         </ul>
       </details>
     </section>
 
     <div class="footer">
-      版本：18:00–21:30 流程骨架｜下一步可補：抽獎獎項配置表、猜歌歌單、站邊題庫、秘密任務卡清單、積分規則細化
+      版本：流程順序調整版｜詳細活動規則另有獨立文件
     </div>
 
   </div>
