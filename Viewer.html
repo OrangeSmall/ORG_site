@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>猜歌計分｜即時比分</title>
+  <style>
+    :root { 
+      --bg: #FDFBF7;           /* 淡米色背景 */
+      --card: #FFFFFF;         /* 純白卡片 */
+      --text: #4A3F35;         /* 深茶色文字 */
+      --muted: #8C7A6B;        /* 淺茶色輔助文字 */
+      --line: #E8E3DC;         /* 柔和邊線 */
+      --primary: #9B4A46;      /* 淡酒紅色 (主色調) */
+      --primary-light: #F7EFEF;/* 超淡酒紅底色 */
+      --v1-bg: #F4EBE1;        /* 1分底色 (淡茶) */
+      --v1-text: #A07345;      /* 1分文字 */
+      --v2-bg: #F0D9D9;        /* 2分底色 (淡酒紅) */
+      --v2-text: #9B4A46;      /* 2分文字 */
+    }
+    body { 
+      margin: 0; 
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+    }
+    
+    /* 標題列：改為置中排版 */
+    header { 
+      position: sticky; 
+      top: 0; 
+      background: rgba(253, 251, 247, 0.95); 
+      backdrop-filter: blur(8px); 
+      border-bottom: 2px solid var(--line); 
+      padding: 20px 20px 15px; /* 微調上下間距 */
+      z-index: 5;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo-container {
+      display: flex;
+      flex-direction: column; /* 讓 LOGO 和標題上下排列 */
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-container img {
+      height: 75px; /* LOGO 放大更明顯 */
+      width: auto;
+    }
+    .logo-container h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+    
+    /* 備註與狀態標籤：置中排列 */
+    .header-pills { 
+      display: flex; 
+      gap: 10px; 
+      align-items: center; 
+      justify-content: center;
+      flex-wrap: wrap; 
+    }
+    .pill { 
+      background: var(--card); 
+      border: 1px solid var(--line); 
+      padding: 6px 14px; 
+      border-radius: 999px; 
+      font-size: 13px; 
+      color: var(--muted); 
+      font-weight: 600;
+    }
+    
+    main { padding: 20px; display: grid; gap: 20px; max-width: 1000px; margin: 0 auto; }
+
+    /* 總分與排名區塊 */
+    .totals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    @media (max-width: 768px) {
+      .totals { grid-template-columns: repeat(2, 1fr); }
+    }
+    .tile { 
+      background: var(--card); 
+      border: 1px solid var(--line); 
+      border-radius: 12px; 
+      padding: 16px; 
+      position: relative; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      text-align: center;
+    }
+    .tile .name { font-size: 16px; color: var(--muted); font-weight: 800; margin-top: 10px;}
+    .tile .score { font-size: 42px; font-weight: 900; margin-top: 4px; color: var(--text); }
+    
+    /* 排名標籤樣式 */
+    .rank { 
+      position: absolute; 
+      right: 12px; 
+      top: 12px; 
+      font-size: 13px; 
+      font-weight: bold;
+      padding: 4px 10px; 
+      border-radius: 8px; 
+    }
+    .rank-1 { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(155,74,70,0.3); }
+    .rank-other { background: var(--line); color: var(--muted); }
+
+    /* 表格區塊 */
+    .table { 
+      background: var(--card); 
+      border: 1px solid var(--line); 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .thead, .tr { display: grid; grid-template-columns: 60px repeat(4, 1fr); }
+    .thead { background: var(--primary-light); border-bottom: 2px solid var(--line); border-radius: 12px 12px 0 0; }
+    .th, .td { padding: 12px 8px; font-size: 14px; display:flex; align-items:center; justify-content:center; }
+    .th { color: var(--primary); font-weight: 800; letter-spacing: 1px; }
+    .tr { border-bottom: 1px solid var(--line); }
+    .tr:last-child { border-bottom: none; }
+    .q { font-weight: 900; color: var(--muted); }
+    
+    /* 🔥 延長加賽分隔線樣式 🔥 */
+    .pk-divider {
+      grid-column: span 5; /* 橫跨整列 */
+      background: var(--primary-light);
+      color: var(--primary);
+      text-align: center;
+      font-weight: 800;
+      padding: 12px 0;
+      letter-spacing: 4px;
+      font-size: 15px;
+      border-bottom: 1px solid var(--line);
+      border-top: 2px dashed var(--primary); /* 上方加虛線更醒目 */
+    }
+
+    /* 分數顯示樣式 */
+    .val { 
+      width: 80%;
+      text-align: center; 
+      font-weight: 900; 
+      border-radius: 8px; 
+      padding: 6px 0; 
+      transition: all 0.3s ease;
+    }
+    .v0 { color: #CCCCCC; }
+    .v1 { background: var(--v1-bg); color: var(--v1-text); border: 1px solid rgba(160,115,69,0.2); }
+    .v2 { background: var(--v2-bg); color: var(--v2-text); border: 1px solid rgba(155,74,70,0.2); font-size: 16px; }
+
+    .small { font-size: 12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img src="https://raw.githubusercontent.com/OrangeSmall/seafood-menu-app/main/logo.png" alt="平凡五金行 LOGO">
+    <h1>春酒猜歌大賽</h1>
+  </div>
+  <div class="header-pills">
+    <div class="pill" id="status" style="border-color: #A3D9A5; background: #EAF5EA; color: #4CAF50;">連線中…</div>
+    <div class="pill">🏆 即時排名自動更新</div>
+    <div class="pill small" id="updatedAt">—</div>
+  </div>
+</header>
+
+<main>
+  <section class="totals" id="totals"></section>
+
+  <section class="table">
+    <div class="thead">
+      <div class="th q">題號</div>
+      <div class="th" id="h0">A隊</div>
+      <div class="th" id="h1">B隊</div>
+      <div class="th" id="h2">C隊</div>
+      <div class="th" id="h3">D隊</div>
+    </div>
+    <div id="tbody"></div>
+  </section>
+</main>
+
+<script>
+  // ⚠️⚠️ 請記得貼上您的 Web App URL ⚠️⚠️
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx7DZ_3C6oavbYsoU0IK6qBojSwKQuk2DhRpCed9OZQtEgRzRocYiebWus3sHx3diU/exec";
+
+  const POLL_MS = 1500;
+
+  const state = {
+    teams: ["A隊","B隊","C隊","D隊"],
+    scores: Array.from({length:30}, () => [0,0,0,0]),
+    lastJson: "",
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const statusEl = $("status");
+  const updatedAtEl = $("updatedAt");
+
+  function setStatus(ok, msg){
+    statusEl.textContent = msg;
+    if(ok){
+      statusEl.style.background = "#EAF5EA";
+      statusEl.style.borderColor = "#A3D9A5";
+      statusEl.style.color = "#4CAF50";
+    } else {
+      statusEl.style.background = "#F7EFEF";
+      statusEl.style.borderColor = "#E8B2B2";
+      statusEl.style.color = "#9B4A46";
+    }
+  }
+
+  function calcTotals(){
+    const totals = [0,0,0,0];
+    for (let q=0;q<30;q++){
+      for (let t=0;t<4;t++) totals[t] += Number(state.scores[q][t]||0);
+    }
+    return totals;
+  }
+
+  function rankFromTotals(totals){
+    const sorted = totals
+      .map((v,i)=>({v,i}))
+      .sort((a,b)=>b.v-a.v);
+
+    const ranks = Array(4).fill(0);
+    let currentRank = 1;
+    for(let k=0;k<sorted.length;k++){
+      if(k>0 && sorted[k].v < sorted[k-1].v) currentRank = k+1;
+      ranks[sorted[k].i] = currentRank;
+    }
+    return ranks;
+  }
+
+  function renderTotals(){
+    const totals = calcTotals();
+    const ranks = rankFromTotals(totals);
+
+    const el = $("totals");
+    el.innerHTML = "";
+    for(let t=0;t<4;t++){
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      
+      const rankClass = ranks[t] === 1 ? "rank-1" : "rank-other";
+      
+      tile.innerHTML = `
+        <div class="rank ${rankClass}">第 ${ranks[t]} 名</div>
+        <div class="name">${state.teams[t]}</div>
+        <div class="score">${totals[t]}</div>
+      `;
+      el.appendChild(tile);
+    }
+  }
+
+  function clsForValue(v){
+    if(v===2) return "val v2";
+    if(v===1) return "val v1";
+    return "val v0";
+  }
+
+  function renderTable(){
+    $("h0").textContent = state.teams[0];
+    $("h1").textContent = state.teams[1];
+    $("h2").textContent = state.teams[2];
+    $("h3").textContent = state.teams[3];
+
+    const tb = $("tbody");
+    tb.innerHTML = "";
+    for(let q=0;q<30;q++){
+      
+      // 🔥 關鍵新增：在迴圈跑到 q=20（也就是第 21 題）之前，插入分隔線
+      if(q === 20) {
+        const divider = document.createElement("div");
+        divider.className = "pk-divider";
+        divider.innerHTML = "🔥 延長加賽環節 🔥";
+        tb.appendChild(divider);
+      }
+
+      const tr = document.createElement("div");
+      tr.className = "tr";
+      const cells = [];
+      cells.push(`<div class="td q">${q+1}</div>`);
+      for(let t=0;t<4;t++){
+        const v = Number(state.scores[q][t]||0);
+        const displayValue = v === 0 ? "-" : v;
+        cells.push(`<div class="td"><div class="${clsForValue(v)}">${displayValue}</div></div>`);
+      }
+      tr.innerHTML = cells.join("");
+      tb.appendChild(tr);
+    }
+  }
+
+  async function fetchScores(){
+    const url = `${WEBAPP_URL}?action=get&t=${Date.now()}`;
+    const res = await fetch(url, { method:"GET", cache:"no-store" });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "fetch failed");
+
+    const jsonStr = JSON.stringify({teams:data.teams, scores:data.scores});
+    if(jsonStr === state.lastJson) {
+      updatedAtEl.textContent = data.updatedAt ? `最後同步：${new Date(data.updatedAt).toLocaleTimeString()}` : "—";
+      setStatus(true, "即時連線中");
+      return;
+    }
+
+    state.lastJson = jsonStr;
+    state.teams = data.teams || ["A隊","B隊","C隊","D隊"]; 
+    state.scores = data.scores || state.scores;
+
+    updatedAtEl.textContent = data.updatedAt ? `最後同步：${new Date(data.updatedAt).toLocaleTimeString()}` : "—";
+    renderTotals();
+    renderTable();
+    setStatus(true, "即時連線中");
+  }
+
+  renderTotals();
+  renderTable();
+
+  async function loop(){
+    try{
+      await fetchScores();
+    }catch(err){
+      setStatus(false, "連線異常，重試中");
+      console.error(err);
+    }finally{
+      setTimeout(loop, POLL_MS);
+    }
+  }
+  loop();
+</script>
+</body>
+</html>
