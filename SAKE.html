@@ -1,1185 +1,431 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>「品味四季」清酒油畫體驗活動企劃案</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>酒類叫貨與月度預算池提案｜一頁式</title>
+  <style>
+    :root{
+      --bg:#f6f4f1;
+      --card:#ffffff;
+      --ink:#111;
+      --muted:#5b5b5b;
+      --line:#e8e3dd;
+      --accent:#8a3b2f;
+      --accent2:#8b6b4f;
+      --chip:#f2ebe4;
+      --good:#0f766e;
+      --warn:#b45309;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC",
+                   "Microsoft JhengHei", Arial, sans-serif;
+      color:var(--ink);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(138,59,47,.10), transparent 60%),
+                  radial-gradient(1000px 500px at 90% 0%, rgba(139,107,79,.10), transparent 55%),
+                  var(--bg);
+      line-height:1.65;
+    }
+    .wrap{
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 18px 14px 28px;
+    }
+    .hero{
+      background: linear-gradient(135deg, rgba(138,59,47,.10), rgba(139,107,79,.08));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
+      position: relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute; inset:-80px -60px auto auto;
+      width:220px; height:220px;
+      background: radial-gradient(circle at 30% 30%, rgba(138,59,47,.18), transparent 55%);
+      transform: rotate(12deg);
+      pointer-events:none;
+    }
+    .title{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    h1{ margin:0; font-size: 20px; letter-spacing:.3px; }
+    .sub{ margin-top:6px; color:var(--muted); font-size: 13px; }
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;}
+    .chip{
+      background: var(--chip);
+      border:1px solid var(--line);
+      color:#2a2a2a;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      white-space:nowrap;
+    }
+    .chip strong{ color:var(--accent); font-weight: 800; }
 
-        body {
-            font-family: 'Microsoft JhengHei', 'Noto Sans TC', Arial, sans-serif;
-            line-height: 1.8;
-            color: #2c3e50;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
+    .top-actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor:pointer;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    }
+    .btn:active{ transform: translateY(1px); }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            border-radius: 15px;
-            overflow: hidden;
-        }
+    .kpi{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .k{
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fff, #fcfbfa);
+      padding: 10px 10px 9px;
+      min-height: 72px;
+    }
+    .k .t{ font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .k .v{ font-size: 15px; font-weight: 800; letter-spacing:.2px; }
+    .k .v b{ color: var(--accent); }
 
-        /* 封面區域 */
-        .hero-section {
-            background: linear-gradient(135deg, #833B36 0%, #AD9667 100%);
-            color: white;
-            padding: 80px 60px;
-            text-align: center;
-            position: relative;
-        }
+    @media (max-width: 560px){
+      .kpi{ grid-template-columns: 1fr; }
+    }
 
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-        }
+    .card{
+      background: var(--card);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 14px 12px;
+    }
+    .card h2{
+      margin:0 0 8px;
+      font-size: 16px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .badge{
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+    }
+    ul{ margin: 8px 0 0 18px; padding: 0; }
+    li{ margin: 6px 0; }
+    .muted{ color: var(--muted); }
+    .sec{ border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; }
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
+    /* NEW layout:
+       - Row A: Section 1 (left) + Section 2 (right)
+       - Row B: Section 3 centered full width
+       - Then rest blocks
+    */
+    .row12{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 900px){
+      .row12{ grid-template-columns: 1fr; }
+    }
 
-        .hero-title {
-            font-size: 3.5em;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+    .centerRow{
+      margin-top: 12px;
+      display:flex;
+      justify-content:center;
+    }
+    .centerRow .card{
+      width: min(820px, 100%);
+    }
 
-        .hero-subtitle {
-            font-size: 1.5em;
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
+    .callout{
+      border:1px solid rgba(138,59,47,.20);
+      background: rgba(138,59,47,.06);
+      border-radius: 16px;
+      padding: 10px 11px;
+      margin-top: 10px;
+    }
+    .callout h3{
+      margin:0 0 6px;
+      font-size: 13px;
+      color: var(--accent);
+    }
 
-        .hero-date {
-            font-size: 1.2em;
-            background: rgba(255,255,255,0.2);
-            padding: 15px 30px;
-            border-radius: 25px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-        }
+    .steps{
+      display:grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .step{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 10px 9px;
+      background:#fff;
+    }
+    .num{
+      width: 26px; height: 26px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(138,59,47,.16), rgba(139,107,79,.14));
+      border:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 800;
+      color: #3a2a28;
+      flex: 0 0 26px;
+      margin-top:1px;
+    }
+    .step b{ color: var(--accent); }
 
-        /* 內容區域 */
-        .content-section {
-            padding: 60px;
-        }
+    .pill{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size: 12px;
+      color: var(--muted);
+      margin-right: 6px;
+      white-space:nowrap;
+    }
+    .pill i{
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      display:inline-block;
+    }
+    .pill.alt i{ background: var(--accent2); }
+    .pill.good i{ background: var(--good); }
+    .pill.warn i{ background: var(--warn); }
 
-        .section {
-            margin-bottom: 50px;
-        }
+    .decision{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .decision{ grid-template-columns: 1fr; }
+    }
+    .cta{
+      border:1px solid rgba(15,118,110,.25);
+      background: rgba(15,118,110,.06);
+    }
+    .cta h2{ color: var(--good); }
+    .note{
+      border:1px solid rgba(180,83,9,.22);
+      background: rgba(180,83,9,.06);
+    }
+    .note h2{ color: var(--warn); }
 
-        .section-title {
-            font-size: 2.2em;
-            color: #833B36;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #AD9667;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .small{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
 
-        .section-icon {
-            font-size: 1.2em;
-        }
-
-        /* 卡片樣式 */
-        .card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-left: 5px solid #AD9667;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin: 25px 0;
-        }
-
-        /* 清酒選品卡片 */
-        .sake-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .sake-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .sake-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(131, 59, 54, 0.2);
-            border-color: #AD9667;
-        }
-
-        .sake-season {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .sake-name {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #833B36;
-            margin-bottom: 10px;
-        }
-
-        .sake-desc {
-            color: #6c757d;
-            font-size: 0.95em;
-        }
-
-        /* 流程時間軸 */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, #833B36, #AD9667);
-            border-radius: 2px;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -37px;
-            top: 30px;
-            width: 15px;
-            height: 15px;
-            background: #AD9667;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 0 3px #AD9667;
-        }
-
-        .timeline-time {
-            font-weight: 700;
-            color: #833B36;
-            font-size: 1.1em;
-            margin-bottom: 8px;
-        }
-
-        .timeline-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .timeline-content {
-            color: #6c757d;
-            line-height: 1.6;
-        }
-
-        /* 表格樣式 */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin: 25px 0;
-        }
-
-        .cost-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cost-table th {
-            background: linear-gradient(135deg, #833B36, #AD9667);
-            color: white;
-            padding: 18px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        .cost-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.2s ease;
-        }
-
-        .cost-table tr:hover td {
-            background-color: #f8f9fa;
-        }
-
-        .cost-table .total-row {
-            background: #f8f9fa;
-            font-weight: 700;
-            border-top: 2px solid #AD9667;
-        }
-
-        .cost-table .profit-row {
-            background: linear-gradient(135deg, rgba(131, 59, 54, 0.1), rgba(173, 150, 103, 0.1));
-            font-weight: 700;
-            color: #833B36;
-        }
-
-        /* 定價方案 */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-
-        .pricing-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pricing-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(135deg, #833B36, #AD9667);
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 35px rgba(131, 59, 54, 0.2);
-            border-color: #AD9667;
-        }
-
-        .pricing-label {
-            background: linear-gradient(135deg, #833B36, #AD9667);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-
-        .pricing-amount {
-            font-size: 3em;
-            font-weight: 700;
-            color: #833B36;
-            margin-bottom: 10px;
-        }
-
-        .pricing-unit {
-            font-size: 1.2em;
-            color: #6c757d;
-            margin-bottom: 20px;
-        }
-
-        .pricing-profit {
-            font-size: 1.1em;
-            color: #28a745;
-            font-weight: 600;
-        }
-
-        /* 特色亮點 */
-        .highlight-box {
-            background: linear-gradient(135deg, #833B36, #AD9667);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 30px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .highlight-box::before {
-            content: '✨';
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 2em;
-            opacity: 0.3;
-        }
-
-        .highlight-title {
-            font-size: 2em;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .highlight-text {
-            font-size: 1.3em;
-            opacity: 0.95;
-            line-height: 1.6;
-        }
-
-        /* 收穫清單 */
-        .benefits-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .benefits-list li {
-            background: white;
-            margin: 15px 0;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-            border-left: 4px solid #AD9667;
-            transition: transform 0.2s ease;
-        }
-
-        .benefits-list li:hover {
-            transform: translateX(5px);
-        }
-
-        .benefits-list li::before {
-            content: '🎯';
-            margin-right: 12px;
-            font-size: 1.2em;
-        }
-
-        /* 策略列表 */
-        .strategy-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .strategy-list li {
-            background: #f8f9fa;
-            margin: 12px 0;
-            padding: 18px;
-            border-radius: 10px;
-            border-left: 4px solid #833B36;
-            transition: background-color 0.2s ease;
-        }
-
-        .strategy-list li:hover {
-            background: #e9ecef;
-        }
-
-        .strategy-list strong {
-            color: #833B36;
-        }
-
-        /* 人力配置 */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .team-member {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
-
-        .team-member:hover {
-            border-color: #AD9667;
-            transform: translateY(-3px);
-        }
-
-        .team-icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            color: #AD9667;
-        }
-
-        .team-role {
-            font-weight: 700;
-            color: #833B36;
-            margin-bottom: 8px;
-        }
-
-        .team-desc {
-            color: #6c757d;
-            font-size: 0.9em;
-        }
-
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 50px 30px;
-            }
-            
-            .hero-title {
-                font-size: 2.5em;
-            }
-            
-            .content-section {
-                padding: 40px 30px;
-            }
-            
-            .section-title {
-                font-size: 1.8em;
-            }
-            
-            .card-grid,
-            .sake-grid,
-            .pricing-grid,
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .timeline {
-                padding-left: 20px;
-            }
-            
-            .timeline-item::before {
-                left: -27px;
-            }
-        }
-
-        /* 打印樣式 */
-        @media print {
-            body {
-                background: white;
-            }
-            
-            .container {
-                box-shadow: none;
-                border-radius: 0;
-            }
-            
-            .hero-section {
-                background: #833B36 !important;
-                print-color-adjust: exact;
-            }
-        }
-    </style>
+    @media print{
+      body{ background:#fff; }
+      .btn{ display:none; }
+      .wrap{ max-width: none; }
+      .card, .hero{ box-shadow:none; }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- 封面區域 -->
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1 class="hero-title">品味四季</h1>
-                <p class="hero-subtitle">日本清酒 × 油畫繪畫 合作活動企劃案</p>
-                <div class="hero-date">2025年10月19日（日）15:00-18:30</div>
-                <div style="margin-top: 20px; font-size: 1em; opacity: 0.8;">
-                    活動企劃課｜小橘 2025.08.10
-                </div>
-            </div>
+  <div class="wrap">
+    <section class="hero">
+      <div class="title">
+        <div>
+          <h1>酒類叫貨與「月度酒類採購預算池」提案</h1>
+          <div class="sub">希望把叫貨節奏穩住、降低缺貨與錯失窗口的機率，也讓採購端更好控管與追蹤</div>
+          <div class="chips">
+            <span class="chip"><strong>核心</strong>：月度預算先核定</span>
+            <span class="chip"><strong>節奏</strong>：月初進貨／月底轉隔月帳</span>
+            <span class="chip"><strong>策略</strong>：回饋專約／合作良好廠商優先</span>
+          </div>
         </div>
 
-        <!-- 內容區域 -->
-        <div class="content-section">
-            <!-- 活動概念 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">🎯</span>
-                    活動概念
-                </h2>
-                <div class="highlight-box">
-                    <h3 class="highlight-title">結合日本四季美學與清酒文化</h3>
-                    <p class="highlight-text">透過品飲不同風味的清酒，引導參與者創作代表四季的油畫作品</p>
-                </div>
-            </div>
-
-            <!-- 活動資訊 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">📅</span>
-                    活動資訊
-                </h2>
-                <div class="card-grid">
-                    <div class="card">
-                        <h4>基本資訊</h4>
-                        <p><strong>日期：</strong>2025年10月19日（日）</p>
-                        <p><strong>時間：</strong>15:00-18:30（3.5小時）</p>
-                        <p><strong>地點：</strong>門市二樓活動空間</p>
-                        <p><strong>人數：</strong>18人（最低開班人數：12人）</p>
-                    </div>
-                    <div class="card">
-                        <h4>收費標準</h4>
-                        <div style="display: flex; gap: 30px; align-items: center; flex-wrap: wrap; margin-top: 15px;">
-                            <div style="text-align: center;">
-                                <div style="color: #833B36; font-weight: 700; font-size: 1.1em;">早鳥報名價</div>
-                                <div style="font-size: 2em; font-weight: 700; color: #AD9667;">2,000元</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="color: #833B36; font-weight: 700; font-size: 1.1em;">會員價</div>
-                                <div style="font-size: 2em; font-weight: 700; color: #AD9667;">2,200元</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="color: #833B36; font-weight: 700; font-size: 1.1em;">原價</div>
-                                <div style="font-size: 2em; font-weight: 700; color: #AD9667;">2,500元</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 清酒選品 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">🍶</span>
-                    清酒選品（4款）
-                </h2>
-                <div class="sake-grid">
-                    <div class="sake-card">
-                        <div class="sake-season">🌸</div>
-                        <div class="sake-name">春酒：純米大吟醸</div>
-                        <div class="sake-desc">清香淡雅，代表春櫻</div>
-                    </div>
-                    <div class="sake-card">
-                        <div class="sake-season">🌿</div>
-                        <div class="sake-name">夏酒：生酒</div>
-                        <div class="sake-desc">清爽微甜，象徵夏日清風</div>
-                    </div>
-                    <div class="sake-card">
-                        <div class="sake-season">🍁</div>
-                        <div class="sake-name">秋酒：山廢純米</div>
-                        <div class="sake-desc">醇厚豐潤，如秋楓層次</div>
-                    </div>
-                    <div class="sake-card">
-                        <div class="sake-season">❄️</div>
-                        <div class="sake-name">冬酒：濁酒</div>
-                        <div class="sake-desc">溫潤厚實，似雪夜溫暖</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 活動流程 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">🎨</span>
-                    活動流程
-                </h2>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-time">15:00-15:30（30分鐘）</div>
-                        <div class="timeline-title">第一階段：開場與品酒導入</div>
-                        <div class="timeline-content">
-                            • 15:00-15:15 報到與歡迎茶點<br>
-                            • 15:15-15:30 活動介紹、清酒文化簡介
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">15:30-16:45（75分鐘）</div>
-                        <div class="timeline-title">第二階段：春夏品飲與創作</div>
-                        <div class="timeline-content">
-                            • 15:30-16:00 品飲春酒與夏酒，講解風味特色<br>
-                            • 16:00-16:45 油畫基礎教學與春夏意象創作
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">16:45-17:00（15分鐘）</div>
-                        <div class="timeline-title">第三階段：中場休息</div>
-                        <div class="timeline-content">
-                            休息時間，輕食補充
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">17:00-18:15（75分鐘）</div>
-                        <div class="timeline-title">第四階段：秋冬品飲與完善作品</div>
-                        <div class="timeline-content">
-                            • 17:00-17:30 品飲秋酒與冬酒，感受層次變化<br>
-                            • 17:30-18:15 完善四季油畫作品
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-time">18:15-18:30（15分鐘）</div>
-                        <div class="timeline-title">第五階段：作品分享與結語</div>
-                        <div class="timeline-content">
-                            作品展示、合照、贈品發放
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 人力配置 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">👥</span>
-                    人力配置
-                </h2>
-                <div class="team-grid">
-                    <div class="team-member">
-                        <div class="team-icon">🍶</div>
-                        <div class="team-role">清酒講師</div>
-                        <div class="team-desc">2名（專業唎酒師）</div>
-                    </div>
-                    <div class="team-member">
-                        <div class="team-icon">🎨</div>
-                        <div class="team-role">油畫老師</div>
-                        <div class="team-desc">1名（主講與教學）</div>
-                    </div>
-                    <div class="team-member">
-                        <div class="team-icon">🏪</div>
-                        <div class="team-role">門市人員</div>
-                        <div class="team-desc">1名（接待與協助）</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 成本分析 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">💰</span>
-                    成本分析
-                </h2>
-                
-                <h3>標準18人班成本結構</h3>
-                <div class="table-container">
-                    <table class="cost-table">
-                        <thead>
-                            <tr>
-                                <th>項目</th>
-                                <th>平均單價</th>
-                                <th>數量</th>
-                                <th>小計</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>酒類成本+油畫材料+講師費用</td>
-                                <td>1,667元</td>
-                                <td>18人</td>
-                                <td>30,000元</td>
-                            </tr>
-                            <tr>
-                                <td>茶點輕食</td>
-                                <td>100元</td>
-                                <td>18人</td>
-                                <td>1,800元</td>
-                            </tr>
-                            <tr>
-                                <td>場地佈置</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>1,000元</td>
-                            </tr>
-                            <tr>
-                                <td>人力成本</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>1,000元</td>
-                            </tr>
-                            <tr class="total-row">
-                                <td><strong>總成本</strong></td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td><strong>33,800元</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>三種定價方案收益分析（18人班）</h3>
-                <div class="table-container">
-                    <table class="cost-table">
-                        <thead>
-                            <tr>
-                                <th>方案</th>
-                                <th>單價</th>
-                                <th>總收入</th>
-                                <th>淨利</th>
-                                <th>利潤率</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>早鳥報名價</td>
-                                <td>2,000元</td>
-                                <td>36,000元</td>
-                                <td>2,200元</td>
-                                <td>6.1%</td>
-                            </tr>
-                            <tr>
-                                <td>會員價</td>
-                                <td>2,200元</td>
-                                <td>39,600元</td>
-                                <td>5,800元</td>
-                                <td>14.6%</td>
-                            </tr>
-                            <tr class="profit-row">
-                                <td><strong>原價</strong></td>
-                                <td><strong>2,500元</strong></td>
-                                <td><strong>45,000元</strong></td>
-                                <td><strong>11,200元</strong></td>
-                                <td><strong>24.9%</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>最低12人班成本結構</h3>
-                <div class="table-container">
-                    <table class="cost-table">
-                        <thead>
-                            <tr>
-                                <th>項目</th>
-                                <th>平均單價</th>
-                                <th>數量</th>
-                                <th>小計</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>酒類成本+油畫材料+講師費用</td>
-                                <td>1,667元</td>
-                                <td>12人</td>
-                                <td>20,000元</td>
-                            </tr>
-                            <tr>
-                                <td>茶點輕食</td>
-                                <td>100元</td>
-                                <td>12人</td>
-                                <td>1,200元</td>
-                            </tr>
-                            <tr>
-                                <td>場地佈置</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>1,000元</td>
-                            </tr>
-                            <tr>
-                                <td>人力成本</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>1,000元</td>
-                            </tr>
-                            <tr class="total-row">
-                                <td><strong>調整後總成本</strong></td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td><strong>23,200元</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3>三種定價方案收益分析（12人班）</h3>
-                <div class="table-container">
-                    <table class="cost-table">
-                        <thead>
-                            <tr>
-                                <th>方案</th>
-                                <th>單價</th>
-                                <th>總收入</th>
-                                <th>淨利</th>
-                                <th>利潤率</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>早鳥報名價</td>
-                                <td>2,000元</td>
-                                <td>24,000元</td>
-                                <td>800元</td>
-                                <td>3.3%</td>
-                            </tr>
-                            <tr>
-                                <td>會員價</td>
-                                <td>2,200元</td>
-                                <td>26,400元</td>
-                                <td>3,200元</td>
-                                <td>12.1%</td>
-                            </tr>
-                            <tr class="profit-row">
-                                <td><strong>原價</strong></td>
-                                <td><strong>2,500元</strong></td>
-                                <td><strong>30,000元</strong></td>
-                                <td><strong>6,800元</strong></td>
-                                <td><strong>22.7%</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 參與者收穫 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">🎁</span>
-                    參與者收穫
-                </h2>
-                <ul class="benefits-list">
-                    <li>4款精選日本清酒品飲體驗</li>
-                    <li>一幅個人創作油畫作品（可帶回）</li>
-                    <li>專業清酒知識與油畫技法學習</li>
-                </ul>
-            </div>
-
-            <!-- 行銷策略 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">📣</span>
-                    行銷策略
-                </h2>
-                <div class="card-grid">
-                    <div class="card">
-                        <h4>目標客群</h4>
-                        <p>25-45歲文藝愛好者、清酒愛好者</p>
-                    </div>
-                    <div class="card">
-                        <h4>宣傳通路</h4>
-                        <p>線上平台、LINE</p>
-                    </div>
-                </div>
-                
-                <h3>分級優惠策略</h3>
-                <ul class="strategy-list">
-                    <li><strong>早鳥優惠：</strong>活動前30天報名享2,000元優惠價</li>
-                    <li><strong>會員專享：</strong>會員享2,200元優惠價</li>
-                    <li><strong>一般原價：</strong>2,500元，突出活動高品質價值</li>
-                    <li><strong>限量18人：</strong>創造稀有性和專屬感</li>
-                </ul>
-            </div>
-
-            <!-- 活動優勢與評估建議 -->
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-icon">⭐</span>
-                    活動優勢與評估建議
-                </h2>
-                
-                <div class="highlight-box">
-                    <h3 class="highlight-title">活動優勢</h3>
-                    <p class="highlight-text">獨特體驗 × 品牌形象提升</p>
-                </div>
-
-                <h3>預期效益</h3>
-                <div class="card-grid">
-                    <div class="card">
-                        <h4>財務效益</h4>
-                        <p><strong>標準18人班：</strong>早鳥2,200元淨利、會員5,800元淨利、原價11,200元淨利</p>
-                        <p><strong>最低12人班：</strong>早鳥800元淨利、會員3,200元淨利、原價6,800元淨利</p>
-                    </div>
-                    <div class="card">
-                        <h4>品牌效益</h4>
-                        <p>提升門市文化形象，吸引高消費力客群，增加客戶黏著度</p>
-                    </div>
-                </div>
-
-                <h3>後續發展</h3>
-                <ul class="strategy-list">
-                    <li><strong>系列活動：</strong>可延伸不同季節主題，形成系列課程</li>
-                    <li><strong>進階課程：</strong>開發清酒達人班、油畫進階班</li>
-                    <li><strong>異業合作：</strong>與藝廊、文創品牌建立長期合作關係</li>
-                    <li><strong>彈性開班：</strong>12-18人彈性開班，降低營運風險</li>
-                </ul>
-            </div>
-
-            <!-- 結論 -->
-            <div class="section">
-                <div class="highlight-box">
-                    <h3 class="highlight-title">評估建議</h3>
-                    <p class="highlight-text">
-                        十月中秋後較平淡期間，搶攻秋季文藝市場商機，嘗試各方向集客類型活動。<br>
-                        且此類型活動有機率吸引較中高價位客群，希望藉由活動提升來客與客單消費。
-                    </p>
-                </div>
-            </div>
+        <div class="top-actions">
+          <button class="btn" onclick="window.print()" title="列印/存成PDF（瀏覽器功能）">🖨️ 列印 / PDF</button>
+          <button class="btn" onclick="scrollTo(0,0)" title="回到最上方">⬆️ 回頂</button>
         </div>
+      </div>
+
+      <div class="kpi">
+        <div class="k">
+          <div class="t">目前卡點</div>
+          <div class="v">預算/品項不即時 → <b>容易錯過窗口</b></div>
+        </div>
+        <div class="k">
+          <div class="t">對營運的影響</div>
+          <div class="v">缺貨、貨架不完整、推薦轉換下降</div>
+        </div>
+        <div class="k">
+          <div class="t">這次提案重點</div>
+          <div class="v">建立<b>月度酒類預算池</b>＋固定節奏</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Row: Section 1 & 2 side-by-side -->
+    <section class="row12">
+      <article class="card">
+        <h2>【一】現況說明 <span class="badge">Current</span></h2>
+        <ul>
+          <li>目前店內「酒類叫貨」仍以我端評估與安排為主（品項優先順序、數量、到貨時點）。</li>
+          <li>酒類具「季節性 / 數量限定 / 叫貨窗口」特性：
+            <ul>
+              <li>可能是<strong>月初</strong>或<strong>月底轉月帳</strong>的短時間可叫貨</li>
+              <li>也可能遇到廠商臨時無供貨，熱門品就容易缺貨</li>
+            </ul>
+          </li>
+          <li>因無法即時確認「本次可叫哪些品項、預算上限多少」，溝通來回一多就可能錯過叫貨時間 → 造成缺貨或補不齊。</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>【二】痛點與營運影響 <span class="badge">Impact</span></h2>
+        <ul>
+          <li>錯過叫貨窗口 → 熱門品缺貨、貨架不完整，影響連帶銷售與推薦轉換。</li>
+          <li>限量/季節品供貨不穩 → 無法提前佈局，採購容易變得被動。</li>
+          <li>預算不明 → 難以做「月度規劃與分店配比」，補貨節奏容易斷。</li>
+          <li><strong>門市缺少專業人員</strong>：
+            北高店明顯缺乏專業；四維店在我休假時偶有類似狀況，
+            導致酒類容易滯銷、供貨缺乏變化，也會影響消費者來店意願。
+          </li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Centered Section 3 -->
+    <section class="centerRow">
+      <article class="card">
+        <h2>【三】建議方向：建立「月度酒類採購預算池」 <span class="badge">Solution</span></h2>
+
+        <div class="callout">
+          <h3>一句話版本</h3>
+          <div>先把每月酒類可用預算定下來，窗口出現時就能直接下單，不用一直來回確認，缺貨風險也會明顯下降。</div>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div>
+              <div><b>月度核定</b>：每月先核定酒類採購額度（例：月預算 10 萬作為概念）。</div>
+              <div class="small muted">可以先試行一個月，後續再依成效調整金額。</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">2</div>
+            <div>
+              <div><b>分店配比</b>：依兩店需求與銷售差異，彈性調整配比來分配品項與數量。</div>
+              <div class="small muted">目標是讓兩邊都「有得賣、好推薦」，也避免單店滯銷。</div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">3</div>
+            <div>
+              <div><b>供應商策略</b>：採購配置會以「回饋專約」與「合作良好」的廠商優先（如開元／旨酒），其餘品項再由其他廠商補強。</div>
+              <div class="small">
+                <span class="pill good"><i></i>回饋專約</span>
+                <span class="pill"><i></i>合作良好</span>
+                <span class="pill alt"><i></i>彈性補強</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="num">4</div>
+            <div>
+              <div><b>叫貨節奏</b>：以「月初 / 月底轉月帳」為主要補貨節點；遇到限量/短窗品項時，可在月度額度內彈性調整。</div>
+              <div class="small muted">若預算有餘，也可以分散安排高單價品項，避免同一時間集中下單造成壓力。</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 4 & 5 -->
+    <section class="row12" style="margin-top:12px;">
+      <article class="card">
+        <h2>【四】進貨邏輯（周轉與現金流） <span class="badge">Control</span></h2>
+        <ul>
+          <li>酒類屬固定需求、具流動性的商品，我希望維持檯面上「健康周轉、有變化」的狀態。</li>
+          <li>安排原則是「<strong>有售出才會進貨</strong>」：不是為了囤庫存，而是用銷售去回補現金流，同時把貨架維持在可推薦、好成交的狀態。</li>
+        </ul>
+        <div class="small muted">簡單說：讓貨架保持好賣、好推薦，比一次大量囤貨更符合現場需求。</div>
+      </article>
+
+      <article class="card">
+        <h2>【五】下單後回報格式（讓採購更好評估） <span class="badge">Report</span></h2>
+        <ul>
+          <li>當月叫貨清單（廠商、成本）</li>
+          <li>酒款分配表（依門市配比）</li>
+          <li>臨時進貨原因（有特殊情況時補充說明）</li>
+        </ul>
+        <div class="small muted">每次下單後我都會同步，讓採購端不用猜「為什麼叫、叫了多少、分到哪裡」。</div>
+      </article>
+    </section>
+
+    <!-- 6 & 7 -->
+    <section class="decision">
+      <div class="card cta">
+        <h2>【六】主管需決策事項</h2>
+        <ul>
+          <li>是否同意採購端以「月」為單位，固定提撥<strong>酒類採購預算池</strong>（也可先用單月金額試行）。</li>
+          <li>若有其他需補充/調整之事項可討論，我這邊會配合調整回報與執行方式。</li>
+        </ul>
+      </div>
+
+      <div class="card note">
+        <h2>【七】年後活動規劃（同步進行）</h2>
+        <ul>
+          <li>近期需開始規劃年後活動排程（卡位），部分活動內容需要先行定案。</li>
+          <li>活動企劃與相關執行內容，後續我會再補上提案企劃供主管確認。</li>
+        </ul>
+        <div class="small muted">本頁先聚焦酒類叫貨與預算機制，活動提案會另行補上。</div>
+      </div>
+    </section>
+
+    <div class="small" style="text-align:center; margin-top:10px;">
+      一頁式提案｜小橘 26.2.25
     </div>
+  </div>
 </body>
-</html><!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>「品味四季」清酒油畫體驗活動企劃案</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Microsoft JhengHei', 'Noto Sans TC', Arial, sans-serif;
-            line-height: 1.8;
-            color: #2c3e50;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        /* 封面區域 */
-        .hero-section {
-            background: linear-gradient(135deg, #833B36 0%, #AD9667 100%);
-            color: white;
-            padding: 80px 60px;
-            text-align: center;
-            position: relative;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-title {
-            font-size: 3.5em;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero-subtitle {
-            font-size: 1.5em;
-            opacity: 0.9;
-            margin-bottom: 30px;
-        }
-
-        .hero-date {
-            font-size: 1.2em;
-            background: rgba(255,255,255,0.2);
-            padding: 15px 30px;
-            border-radius: 25px;
-            display: inline-block;
-            backdrop-filter: blur(10px);
-        }
-
-        /* 內容區域 */
-        .content-section {
-            padding: 60px;
-        }
-
-        .section {
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            font-size: 2.2em;
-            color: #833B36;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #AD9667;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .section-icon {
-            font-size: 1.2em;
-        }
-
-        /* 卡片樣式 */
-        .card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-left: 5px solid #AD9667;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin: 25px 0;
-        }
-
-        /* 清酒選品卡片 */
-        .sake-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .sake-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .sake-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(131, 59, 54, 0.2);
-            border-color: #AD9667;
-        }
-
-        .sake-season {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .sake-name {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #833B36;
-            margin-bottom: 10px;
-        }
-
-        .sake-desc {
-            color: #6c757d;
-            font-size: 0.95em;
-        }
-
-        /* 流程時間軸 */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, #833B36, #AD9667);
-            border-radius: 2px;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -37px;
-            top: 30px;
-            width: 15px;
-            height: 15px;
-            background: #AD9667;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 0 3px #AD9667;
-        }
-
-        .timeline-time {
-            font-weight: 700;
-            color: #833B36;
-            font-size: 1.1em;
-            margin-bottom: 8px;
-        }
-
-        .timeline-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .timeline-content {
-            color: #6c757d;
-            line-height: 1.6;
-        }
-
-        /* 表格樣式 */
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin: 25px 0;
-        }
-
-        .cost-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .cost-table th {
-            background: linear-gradient(135deg, #833B36, #AD9667);
-            color: white;
-            padding: 18px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 1.1em;
-        }
-
-        .cost-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.2s ease;
-        }
-
-        .cost-table tr:hover td {
-            background-color: #f8f9fa;
-        }
-
-        .cost-table .total-row {
-            background: #f8f9fa;
-            font-weight: 700;
-            border-top: 2px solid #AD9667;
-        }
-
-        .cost-table .profit-row {
-            background: linear-gradient(135deg, rgba
+</html>
