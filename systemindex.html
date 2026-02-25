@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>內部營運管理系統</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 無印風配色與字體 */
+        body {
+            /* 米白色背景，類似再生紙質感 */
+            background-color: #f7f3e8; 
+            color: #4a4a4a;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* 卡片樣式：簡約紙張感 */
+        .muji-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px; /* 無印風通常導圓角較小 */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .muji-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            border-color: #a0a0a0;
+        }
+
+        /* 分類按鈕樣式 */
+        .category-btn {
+            background-color: #eaddcf; /* 亞麻色 */
+            color: #5c5c5c;
+        }
+        .category-btn.active {
+            background-color: #7f0019; /* 無印紅 (品牌強調色) */
+            color: white;
+        }
+        .category-btn:hover:not(.active) {
+            background-color: #dcc8b3;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 頂部導航欄 (簡約風格) -->
+    <nav class="w-full bg-white border-b border-[#e0e0e0] px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-[#7f0019] text-white w-8 h-8 flex items-center justify-center rounded-sm">
+                <i class="fa-solid fa-utensils text-sm"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-widest text-gray-800">內部營運系統</h1>
+                <p class="text-xs text-gray-500 tracking-wide">Premium Ingredients Management</p>
+            </div>
+        </div>
+        <div class="text-sm text-gray-400 font-light">
+            <span id="current-date"></span>
+        </div>
+    </nav>
+
+    <!-- 主要內容區 -->
+    <main class="container mx-auto px-4 py-8 flex-grow max-w-6xl">
+        
+        <!-- 企業 LOGO 區 -->
+        <div class="flex justify-center mb-8">
+            <!-- 使用 raw.githubusercontent.com 確保圖片能正確載入 -->
+            <img src="https://raw.githubusercontent.com/OrangeSmall/seafood-menu-app/main/logo.png" alt="企業標誌" class="h-32 object-contain drop-shadow-sm">
+        </div>
+
+        <!-- 搜尋與篩選區 -->
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-medium mb-6 text-gray-700 tracking-wider border-b-2 border-[#eaddcf] inline-block pb-2">
+                功能導航
+            </h2>
+            <div class="relative max-w-lg mx-auto mb-6">
+                <input type="text" id="searchInput" placeholder="搜尋工具..." 
+                    class="w-full p-3 pl-10 rounded bg-white border border-[#d1d1d1] text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#7f0019] focus:ring-1 focus:ring-[#7f0019] transition shadow-sm">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        
+            <!-- 分類標籤 -->
+            <div class="flex flex-wrap justify-center gap-3" id="category-filters">
+                <!-- 由 JS 動態生成 -->
+            </div>
+        </div>
+
+        <!-- 工具卡片網格 -->
+        <div id="app-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <!-- 卡片內容將由 JavaScript 生成 -->
+        </div>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="text-center py-8 text-gray-400 text-xs bg-white border-t border-[#e0e0e0]">
+        <p>&copy; 2024 Internal System. Designed for Quality.</p>
+    </footer>
+
+    <!-- 腳本邏輯 -->
+    <script>
+        // ==========================================
+        // 設定區域：你的 App 清單
+        // ==========================================
+        const apps = [
+            {
+                title: "活體報價後台工具",
+                description: "提供活體海鮮之即時報價與後台管理。",
+                url: "https://seafood-menu-app-dsvt6qfpmqyfgeyvegmczc.streamlit.app/", 
+                icon: "fa-solid fa-shrimp", 
+                category: "倉儲",
+                status: "測試中"
+            },
+            {
+                title: "酒類後台查詢工具",
+                description: "酒水進銷存與酒類資料查詢。",
+                url: "https://script.google.com/macros/s/AKfycbxL73DlKl8hgjd7fiUX1JNkIfIQguFKFhe16JTyhB9OMtjIkK73ULzJJCP7ox1Yp1ou/exec",
+                icon: "fa-solid fa-wine-bottle",
+                category: "倉儲",
+                status: "開發中"
+            },
+            {
+                title: "價格牌申請工具",
+                description: "肉品加工及各類商品價格牌申請。",
+                url: "https://script.google.com/macros/s/AKfycbybQfPlcRBlFQyVfsKFweGbtaxJbzpisyNzpTA1A-dyvWAcjumVe99GYUb3jnbKUl4/exec",
+                icon: "fa-solid fa-tags",
+                category: "生產",
+                status: "測試中"
+            },
+            {
+                title: "門市排程管理工具",
+                description: "禮盒定價與門市相關排程管理。",
+                url: "https://script.google.com/macros/s/AKfycbz-eyBcgSmv12YOkeMqiXXbuyBxYUo6g-xwwpuTYjVnu_ip9G5PdTsOblwv89pqazA/exec", 
+                icon: "fa-solid fa-store",
+                category: "銷售",
+                status: "測試中"
+            },
+            {
+                title: "員工排班表",
+                description: "外場與內場人員班表。",
+                url: "javascript:void(0)", /* 維護中，設定為無效連結 */
+                icon: "fa-solid fa-calendar-days",
+                category: "人資",
+                status: "維護中"
+            },
+             {
+                title: "會議室預約",
+                description: "內部會議空間登記 (待建立)。",
+                url: "javascript:void(0)", /* 維護中，設定為無效連結 */
+                icon: "fa-solid fa-door-open",
+                category: "行政",
+                status: "維護中"
+            }
+        ];
+
+        // ==========================================
+        // 程式邏輯區
+        // ==========================================
+
+        const grid = document.getElementById('app-grid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryContainer = document.getElementById('category-filters');
+        
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString();
+
+        // 1. 初始化分類按鈕
+        function initCategories() {
+            const categories = ['全部', ...new Set(apps.map(app => app.category))];
+            
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `category-btn px-5 py-1.5 rounded text-sm transition ${cat === '全部' ? 'active' : ''}`;
+                btn.innerText = cat;
+                btn.onclick = () => filterApps(cat, btn);
+                categoryContainer.appendChild(btn);
+            });
+        }
+
+        // 2. 渲染卡片函數 (無印風版)
+        function renderApps(data) {
+            grid.innerHTML = '';
+            
+            if(data.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10">無相關項目</div>`;
+                return;
+            }
+
+            data.forEach(app => {
+                let statusClass = "text-gray-500 border-gray-300";
+                if(app.status === "正式版") statusClass = "text-green-600 border-green-200 bg-green-50";
+                if(app.status === "測試中") statusClass = "text-blue-600 border-blue-200 bg-blue-50";
+                if(app.status === "開發中") statusClass = "text-amber-600 border-amber-200 bg-amber-50";
+                if(app.status === "維護中") statusClass = "text-red-600 border-red-200 bg-red-50";
+
+                const card = document.createElement('a');
+                card.href = app.url;
+                if (app.url !== "javascript:void(0)") {
+                    card.target = "_blank";
+                }
+                card.className = "muji-card p-5 flex flex-col justify-between group no-underline relative overflow-hidden";
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="text-2xl text-[#7f0019] opacity-80 group-hover:scale-110 transition duration-300">
+                                <i class="${app.icon}"></i>
+                            </div>
+                            <span class="text-[10px] px-2 py-0.5 border rounded ${statusClass}">${app.status}</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-gray-800 group-hover:text-[#7f0019] transition">${app.title}</h3>
+                        <p class="text-sm text-gray-500 leading-relaxed font-light">${app.description}</p>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-t border-dashed border-gray-200 flex justify-end">
+                        <span class="text-xs text-gray-400 group-hover:text-[#7f0019] transition flex items-center">
+                            前往 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+                        </span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 3. 篩選邏輯
+        function filterApps(category, clickedBtn) {
+            const buttons = categoryContainer.querySelectorAll('button');
+            buttons.forEach(b => b.classList.remove('active'));
+            clickedBtn.classList.add('active');
+
+            if (category === '全部') {
+                renderApps(apps);
+            } else {
+                const filtered = apps.filter(app => app.category === category);
+                renderApps(filtered);
+            }
+        }
+
+        // 4. 搜尋邏輯
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = apps.filter(app => 
+                app.title.toLowerCase().includes(keyword) || 
+                app.description.toLowerCase().includes(keyword)
+            );
+            renderApps(filtered);
+        });
+
+        initCategories();
+        renderApps(apps);
+
+    </script>
+</body>
+</html>
