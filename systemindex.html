@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>內部營運管理系統</title>
-    <!-- 引入 Tailwind CSS -->
+    <title>內部營運管理系統（建立中）</title>
+    <!-- 引入 Tailwind CSS (快速排版工具) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 FontAwesome -->
+    <!-- 引入 FontAwesome (圖示庫) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Noto Sans TC -->
+    <!-- Google Fonts: Noto Sans TC (無印風字體) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* 無印風配色與字體 */
+        /* 無印風配色與字體設定 */
         body {
             /* 米白色背景，類似再生紙質感 */
             background-color: #f7f3e8; 
@@ -53,9 +53,7 @@
     <!-- 頂部導航欄 (簡約風格) -->
     <nav class="w-full bg-white border-b border-[#e0e0e0] px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div class="flex items-center gap-3">
-            <div class="bg-[#7f0019] text-white w-8 h-8 flex items-center justify-center rounded-sm">
-                <i class="fa-solid fa-utensils text-sm"></i>
-            </div>
+            <img src="https://raw.githubusercontent.com/OrangeSmall/seafood-menu-app/main/logo.png" alt="企業小標誌" class="h-10 object-contain">
             <div>
                 <h1 class="text-xl font-bold tracking-widest text-gray-800">內部營運系統</h1>
                 <p class="text-xs text-gray-500 tracking-wide">Premium Ingredients Management</p>
@@ -81,15 +79,13 @@
                 功能導航
             </h2>
             <div class="relative max-w-lg mx-auto mb-6">
-                <input type="text" id="searchInput" placeholder="搜尋工具..." 
+                <input type="text" id="searchInput" placeholder="搜尋工具名稱..." 
                     class="w-full p-3 pl-10 rounded bg-white border border-[#d1d1d1] text-gray-700 placeholder-gray-400 focus:outline-none focus:border-[#7f0019] focus:ring-1 focus:ring-[#7f0019] transition shadow-sm">
                 <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
         
-            <!-- 分類標籤 -->
-            <div class="flex flex-wrap justify-center gap-3" id="category-filters">
-                <!-- 由 JS 動態生成 -->
-            </div>
+            <!-- 分類標籤 (由 JS 動態生成) -->
+            <div class="flex flex-wrap justify-center gap-3" id="category-filters"></div>
         </div>
 
         <!-- 工具卡片網格 -->
@@ -107,7 +103,7 @@
     <!-- 腳本邏輯 -->
     <script>
         // ==========================================
-        // 設定區域：你的 App 清單
+        // 設定區域：App 清單與連結
         // ==========================================
         const apps = [
             {
@@ -135,6 +131,14 @@
                 status: "測試中"
             },
             {
+                title: "熟食產能追蹤工具",
+                description: "熟食生產日報與彙整",
+                url: "https://orangesmall.github.io/kitchen-tracker/",
+                icon: "fa-solid fa-bowl-food",
+                category: "生產",
+                status: "測試中"
+            },
+            {
                 title: "門市排程管理工具",
                 description: "禮盒定價與門市相關排程管理。",
                 url: "https://script.google.com/macros/s/AKfycbz-eyBcgSmv12YOkeMqiXXbuyBxYUo6g-xwwpuTYjVnu_ip9G5PdTsOblwv89pqazA/exec", 
@@ -151,23 +155,32 @@
                 status: "維護中"
             },
              {
-                title: "會議室預約",
+                title: "會議預約",
                 description: "內部會議空間登記 (待建立)。",
                 url: "javascript:void(0)", /* 維護中，設定為無效連結 */
                 icon: "fa-solid fa-door-open",
                 category: "行政",
                 status: "維護中"
+            },
+            {
+                title: "內部意見回饋系統",
+                description: "內部溝通與意見交換使用",
+                url: "https://orangesmall.github.io/Announcement/Comment.html",
+                icon: "fa-solid fa-comments",
+                category: "行政",
+                status: "開發中"
             }
         ];
 
         // ==========================================
-        // 程式邏輯區
+        // 程式邏輯區 (無需修改)
         // ==========================================
 
         const grid = document.getElementById('app-grid');
         const searchInput = document.getElementById('searchInput');
         const categoryContainer = document.getElementById('category-filters');
         
+        // 顯示當前日期
         document.getElementById('current-date').innerText = new Date().toLocaleDateString();
 
         // 1. 初始化分類按鈕
@@ -183,7 +196,7 @@
             });
         }
 
-        // 2. 渲染卡片函數 (無印風版)
+        // 2. 渲染卡片函數
         function renderApps(data) {
             grid.innerHTML = '';
             
@@ -193,6 +206,7 @@
             }
 
             data.forEach(app => {
+                // 設定狀態顏色
                 let statusClass = "text-gray-500 border-gray-300";
                 if(app.status === "正式版") statusClass = "text-green-600 border-green-200 bg-green-50";
                 if(app.status === "測試中") statusClass = "text-blue-600 border-blue-200 bg-blue-50";
@@ -201,10 +215,13 @@
 
                 const card = document.createElement('a');
                 card.href = app.url;
+                
+                // 只有有效連結才開啟新分頁
                 if (app.url !== "javascript:void(0)") {
                     card.target = "_blank";
                 }
-                card.className = "muji-card p-5 flex flex-col justify-between group no-underline relative overflow-hidden";
+
+                card.className = "muji-card p-5 flex flex-col justify-between group no-underline relative overflow-hidden cursor-pointer";
                 
                 card.innerHTML = `
                     <div>
@@ -252,6 +269,7 @@
             renderApps(filtered);
         });
 
+        // 啟動程式
         initCategories();
         renderApps(apps);
 
