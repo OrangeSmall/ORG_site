@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎉</text></svg>">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>春酒活動入口工具</title>
@@ -19,6 +18,8 @@
       --radius: 18px;
       --accent: #ff6b6b;
       --accent2: #ff8e53;
+      --cta1:#6d28d9;
+      --cta2:#2563eb;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,28 +31,14 @@
       color: var(--text);
       background: linear-gradient(135deg, #fff7fb 0%, #fffaf0 50%, #f4fbff 100%);
     }
-
-    body {
-      position: relative;
-      overflow-x: hidden;
-    }
+    body { position: relative; overflow-x: hidden; }
 
     /* 避免未驗證前先閃出內容 */
-    [data-protected-app] {
-      visibility: hidden;
-    }
-    body.authenticated [data-protected-app] {
-      visibility: visible;
-    }
+    [data-protected-app] { visibility: hidden; }
+    body.authenticated [data-protected-app] { visibility: visible; }
 
     /* 活潑背景 */
-    .bg {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: -2;
-      pointer-events: none;
-    }
+    .bg { position: fixed; inset: 0; overflow: hidden; z-index: -2; pointer-events: none; }
     .blob {
       position: absolute;
       border-radius: 50%;
@@ -59,26 +46,10 @@
       opacity: 0.45;
       animation: float 14s ease-in-out infinite;
     }
-    .blob.b1 {
-      width: 220px; height: 220px; background: var(--bg1);
-      top: -30px; left: -40px;
-      animation-delay: 0s;
-    }
-    .blob.b2 {
-      width: 260px; height: 260px; background: var(--bg3);
-      top: 18%; right: -60px;
-      animation-delay: -4s;
-    }
-    .blob.b3 {
-      width: 240px; height: 240px; background: var(--bg4);
-      bottom: 12%; left: -70px;
-      animation-delay: -8s;
-    }
-    .blob.b4 {
-      width: 280px; height: 280px; background: var(--bg2);
-      bottom: -70px; right: -50px;
-      animation-delay: -2s;
-    }
+    .blob.b1 { width: 220px; height: 220px; background: var(--bg1); top: -30px; left: -40px; animation-delay: 0s; }
+    .blob.b2 { width: 260px; height: 260px; background: var(--bg3); top: 18%; right: -60px; animation-delay: -4s; }
+    .blob.b3 { width: 240px; height: 240px; background: var(--bg4); bottom: 12%; left: -70px; animation-delay: -8s; }
+    .blob.b4 { width: 280px; height: 280px; background: var(--bg2); bottom: -70px; right: -50px; animation-delay: -2s; }
     @keyframes float {
       0%, 100% { transform: translateY(0) translateX(0) scale(1); }
       25% { transform: translateY(-14px) translateX(8px) scale(1.03); }
@@ -100,7 +71,7 @@
     }
 
     .wrap {
-      width: min(100%, 540px);
+      width: min(100%, 560px);
       margin: 0 auto;
       padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 24px);
     }
@@ -112,7 +83,7 @@
       border-radius: 22px;
       box-shadow: var(--shadow);
       padding: 18px 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .badge {
@@ -129,27 +100,73 @@
       box-shadow: 0 6px 14px rgba(255, 107, 107, 0.35);
     }
 
-    h1 {
-      margin: 0;
-      font-size: 24px;
+    h1 { margin: 0; font-size: 24px; line-height: 1.2; font-weight: 900; letter-spacing: 0.5px; }
+
+    .subtitle { margin-top: 8px; color: var(--subtext); font-size: 14px; line-height: 1.5; }
+
+    /* 顯眼主 CTA：春酒登入系統 */
+    .cta {
+      display: block;
+      text-decoration: none;
+      color: #fff;
+      border-radius: 22px;
+      padding: 16px 16px;
+      box-shadow: 0 16px 34px rgba(37, 99, 235, 0.25);
+      background: linear-gradient(135deg, var(--cta1), var(--cta2));
+      border: 1px solid rgba(255,255,255,0.25);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .cta::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.28), transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(255,255,255,.18), transparent 38%);
+      pointer-events:none;
+    }
+    .cta:active{ transform: scale(0.992); }
+    .cta-top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .cta-title{
+      margin:0;
+      font-size: 18px;
+      font-weight: 1000;
+      letter-spacing: .5px;
       line-height: 1.2;
+    }
+    .cta-tag{
+      font-size: 11px;
       font-weight: 900;
-      letter-spacing: 0.5px;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.26);
+      padding: 6px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
     }
-
-    .subtitle {
-      margin-top: 8px;
-      color: var(--subtext);
-      font-size: 14px;
+    .cta-desc{
+      margin:8px 0 0;
+      font-size: 13px;
       line-height: 1.5;
+      opacity: .92;
+    }
+    .cta-hint{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size: 12px;
+      opacity: .9;
+    }
+    .cta-hint .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 0 0 6px rgba(255,255,255,.18);
+      flex: 0 0 auto;
     }
 
-    .menu {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
+    .menu { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
 
     .card, .card-link {
       display: flex;
@@ -165,11 +182,7 @@
       overflow: hidden;
     }
 
-    .card-link {
-      text-decoration: none;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-
+    .card-link { text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
     .card-link::before {
       content: "";
       position: absolute;
@@ -180,10 +193,7 @@
       pointer-events: none;
     }
     .card-link:hover::before { transform: translateX(120%); }
-    .card-link:active {
-      transform: scale(0.985);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-    }
+    .card-link:active { transform: scale(0.985); box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
 
     .card-disabled {
       opacity: 0.85;
@@ -208,26 +218,12 @@
     .i4 { background: linear-gradient(135deg, #b5ead7, #d7fff1); }
     .i5 { background: linear-gradient(135deg, #f9c5d1, #ffe2ea); }
     .i6 { background: linear-gradient(135deg, #ffe29a, #fff4cc); }
-    .i7 { background: linear-gradient(135deg, #bde0fe, #e3f2ff); } 
-    .i8 { background: linear-gradient(135deg, #d0f4de, #ecfff3); } 
+    .i7 { background: linear-gradient(135deg, #bde0fe, #e3f2ff); } /* 電腦 */
+    .i8 { background: linear-gradient(135deg, #d0f4de, #ecfff3); } /* 音符 */
 
-    .content {
-      min-width: 0;
-      flex: 1;
-    }
-    .title {
-      font-size: 16px;
-      font-weight: 800;
-      line-height: 1.3;
-      margin: 0;
-      word-break: break-word;
-    }
-    .desc {
-      margin: 3px 0 0;
-      font-size: 12px;
-      color: var(--subtext);
-      line-height: 1.4;
-    }
+    .content { min-width: 0; flex: 1; }
+    .title { font-size: 16px; font-weight: 800; line-height: 1.3; margin: 0; word-break: break-word; }
+    .desc { margin: 3px 0 0; font-size: 12px; color: var(--subtext); line-height: 1.4; }
 
     .arrow {
       margin-left: auto;
@@ -275,10 +271,7 @@
       background: rgba(255,255,255,0.35);
       backdrop-filter: blur(10px);
     }
-
-    body:not(.authenticated) .lock-screen {
-      display: flex;
-    }
+    body:not(.authenticated) .lock-screen { display: flex; }
 
     .lock-card {
       width: min(100%, 420px);
@@ -290,8 +283,7 @@
     }
 
     .lock-icon {
-      width: 58px;
-      height: 58px;
+      width: 58px; height: 58px;
       margin: 0 auto 10px;
       border-radius: 18px;
       display: grid;
@@ -301,31 +293,11 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.8);
     }
 
-    .lock-title {
-      margin: 0;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 900;
-    }
+    .lock-title { margin: 0; text-align: center; font-size: 20px; font-weight: 900; }
+    .lock-subtitle { margin: 6px 0 14px; text-align: center; color: var(--subtext); font-size: 13px; line-height: 1.5; }
 
-    .lock-subtitle {
-      margin: 6px 0 14px;
-      text-align: center;
-      color: var(--subtext);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .field {
-      display: grid;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #4b5563;
-    }
+    .field { display: grid; gap: 8px; }
+    .field label { font-size: 13px; font-weight: 700; color: #4b5563; }
 
     .field input {
       width: 100%;
@@ -337,17 +309,12 @@
       outline: none;
       transition: border-color .15s ease, box-shadow .15s ease;
     }
-
     .field input:focus {
       border-color: #f59e0b;
       box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
     }
 
-    .lock-actions {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .lock-actions { display: grid; gap: 8px; margin-top: 12px; }
 
     .btn {
       border: none;
@@ -357,17 +324,12 @@
       font-weight: 800;
       cursor: pointer;
     }
-
     .btn-primary {
       color: #fff;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       box-shadow: 0 8px 16px rgba(255, 107, 107, 0.28);
     }
-
-    .btn-secondary {
-      color: #374151;
-      background: #f3f4f6;
-    }
+    .btn-secondary { color: #374151; background: #f3f4f6; }
 
     .error-msg {
       margin-top: 10px;
@@ -381,6 +343,7 @@
     @media (min-width: 520px) {
       .menu { grid-template-columns: 1fr 1fr; }
       .hero { padding: 20px 18px; }
+      .cta-title{ font-size: 19px; }
     }
   </style>
 </head>
@@ -400,7 +363,7 @@
       <h2 class="lock-title">春酒活動入口</h2>
       <p class="lock-subtitle">
         請輸入密碼後進入工具站<br>
-        （手機閱讀友善）
+        （手機版優先）
       </p>
 
       <div class="field">
@@ -430,9 +393,19 @@
       <div class="badge">🍻 春酒活動入口工具</div>
       <h1>春酒活動工具站</h1>
       <div class="subtitle">
-        流程、規則、秘密任務與現場資訊入口整合（手機閱讀友善）
+        流程、規則、秘密任務與現場資訊入口整合（手機快速查看）
       </div>
     </section>
+
+    <!-- 超顯眼：春酒登入系統 -->
+    <a class="cta" href="https://party2026-oxyitnrht-orangesmalls-projects.vercel.app/" target="_blank" rel="noopener">
+      <div class="cta-top">
+        <div class="cta-title">春酒登入系統</div>
+        <div class="cta-tag">最常用入口</div>
+      </div>
+      <div class="cta-desc">活動現場快速登入／操作（建議先開這個）</div>
+      <div class="cta-hint"><span class="dot"></span>點擊開啟（新分頁）</div>
+    </a>
 
     <nav class="menu" aria-label="春酒活動功能選單">
       <a class="card-link" href="https://orangesmall.github.io/ORG_site/spring.html" target="_blank" rel="noopener">
@@ -461,54 +434,55 @@
         </div>
         <div class="arrow">›</div>
       </a>
-      <a class="card-link" href="https://script.google.com/macros/s/AKfycbx7DZ_3C6oavbYsoU0IK6qBojSwKQuk2DhRpCed9OZQtEgRzRocYiebWus3sHx3diU/exec" target="_blank" rel="noopener">
-  <div class="icon i7">💻</div>
-  <div class="content">
-    <p class="title">猜歌王後台系統</p>
-    <p class="desc">工作人員專用</p>
-  </div>
-  <div class="arrow">›</div>
-</a>
 
-<a class="card-link" href="https://orangesmall.github.io/ORG_site/Viewer.html" target="_blank" rel="noopener">
-  <div class="icon i8">🎵</div>
-  <div class="content">
-    <p class="title">平凡猜歌王－計分板</p>
-    <p class="desc">第一屆平凡猜歌王究竟是</p>
-  </div>
-  <div class="arrow">›</div>
-</a>
+      <a class="card-link" href="https://script.google.com/macros/s/AKfycbx7DZ_3C6oavbYsoU0IK6qBojSwKQuk2DhRpCed9OZQtEgRzRocYiebWus3sHx3diU/exec" target="_blank" rel="noopener">
+        <div class="icon i7">💻</div>
+        <div class="content">
+          <p class="title">猜歌王後台系統</p>
+          <p class="desc">工作人員專用</p>
+        </div>
+        <div class="arrow">›</div>
+      </a>
+
+      <a class="card-link" href="https://orangesmall.github.io/ORG_site/Viewer.html" target="_blank" rel="noopener">
+        <div class="icon i8">🎵</div>
+        <div class="content">
+          <p class="title">平凡猜歌王－計分板</p>
+          <p class="desc">第一屆平凡猜歌王究竟是</p>
+        </div>
+        <div class="arrow">›</div>
+      </a>
 
       <div class="card card-disabled" aria-disabled="true">
         <div class="icon i4">🗂️</div>
         <div class="content">
           <p class="title">春酒流程</p>
-          <p class="desc">詳細流程版（維修中）</p>
+          <p class="desc">詳細流程版（目前編輯中）</p>
         </div>
-        <div class="status-tag">維修中</div>
+        <div class="status-tag">編輯中</div>
       </div>
 
       <div class="card card-disabled" aria-disabled="true">
         <div class="icon i5">🪑</div>
         <div class="content">
           <p class="title">現場座位／分組表</p>
-          <p class="desc">座位配置與分組資訊（維修中）</p>
+          <p class="desc">座位配置與分組資訊（目前編輯中）</p>
         </div>
-        <div class="status-tag">維修中</div>
+        <div class="status-tag">編輯中</div>
       </div>
 
       <div class="card card-disabled" aria-disabled="true">
         <div class="icon i6">📝</div>
         <div class="content">
           <p class="title">準備與代辦清單</p>
-          <p class="desc">活動前置準備與待辦事項整理（編輯中）</p>
+          <p class="desc">活動前置準備與待辦事項整理（目前編輯中）</p>
         </div>
         <div class="status-tag">編輯中</div>
       </div>
     </nav>
 
     <div class="footer">
-      ✨ 肝只有一個，編輯中部份請耐心等候 ✨
+      若後續頁面完成，將「編輯中」卡片改成超連結即可使用 ✨
     </div>
   </main>
 
