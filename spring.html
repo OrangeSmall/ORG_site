@@ -14,51 +14,116 @@
       --accent:#8b5e3c;
       --good:#1f7a3a;
       --warn:#a35d00;
+      --shadow:0 8px 24px rgba(0,0,0,.05);
     }
     *{box-sizing:border-box}
     body{
-      margin:0; background:var(--bg); color:var(--ink);
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
       font-family:-apple-system, BlinkMacSystemFont, "Noto Sans TC","PingFang TC","Microsoft JhengHei", Arial, sans-serif;
       line-height:1.55;
     }
-    .wrap{max-width:980px; margin:0 auto; padding:20px;}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(8px);
+      background:rgba(250,248,244,.88);
+      border-bottom:1px solid var(--line);
+      padding:10px 12px;
+    }
+    .topbar-inner{
+      max-width:1180px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .topbar-title{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .view-switch{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .view-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:12px;
+      cursor:pointer;
+      color:#4a3527;
+    }
+    .view-btn.active{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+    }
+
+    .page{
+      width:100%;
+      margin:0 auto;
+      padding:18px 12px 28px;
+      transition:max-width .2s ease;
+    }
+    .page.mobile-view{
+      max-width:460px;
+    }
+    .page.desktop-view{
+      max-width:1180px;
+    }
+
     header{
       background:linear-gradient(135deg, #fff, #fff7ef);
       border:1px solid var(--line);
       border-radius:16px;
       padding:18px 18px 14px;
-      box-shadow:0 8px 24px rgba(0,0,0,.05);
+      box-shadow:var(--shadow);
     }
     h1{margin:0 0 6px; font-size:20px; letter-spacing:.5px}
     .sub{margin:0; color:var(--muted); font-size:13px}
-    .printbar{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-      margin-top:10px;
+
+    .pillrow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
     }
-    button{
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
       border:1px solid var(--line);
       background:#fff;
-      border-radius:12px;
-      padding:8px 10px;
       font-size:12px;
-      cursor:pointer;
+      color:var(--muted);
     }
-    button:hover{border-color:#d7c9b8}
-    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    .pill{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid var(--line); background:#fff;
-      font-size:12px; color:var(--muted);
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--accent);
     }
-    .dot{width:8px; height:8px; border-radius:50%; background:var(--accent)}
+
     .grid{
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns:1fr;
       gap:14px;
       margin-top:14px;
     }
-    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+    .desktop-view .grid.two-col{
+      grid-template-columns: 1.1fr .9fr;
+    }
+
     .card{
       background:var(--card);
       border:1px solid var(--line);
@@ -67,25 +132,63 @@
       box-shadow:0 8px 22px rgba(0,0,0,.04);
     }
     .card h2{margin:0 0 10px; font-size:16px}
-    .kvs{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    .kv{border:1px dashed var(--line); border-radius:12px; padding:10px; background:#fffdfb}
-    .kv b{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
-    .kv .lines{font-size:14px}
-    .kv .lines div{display:block; margin:2px 0}
+
+    .kvs{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .desktop-view .kvs.two{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .kv{
+      border:1px dashed var(--line);
+      border-radius:12px;
+      padding:10px;
+      background:#fffdfb;
+    }
+    .kv b{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .kv .lines{
+      font-size:14px;
+    }
+    .kv .lines div{
+      display:block;
+      margin:2px 0;
+    }
+
     .mini{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;
-      color:var(--muted); font-size:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
     }
     .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding:6px 10px; border-radius:12px;
-      border:1px solid var(--line); background:#fffdfb;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fffdfb;
     }
     .badge.good .dot{background:var(--good)}
     .badge.warn .dot{background:var(--warn)}
+
     .table{
-      width:100%; border-collapse:separate; border-spacing:0;
-      overflow:hidden; border-radius:14px; border:1px solid var(--line);
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
     }
     .table th, .table td{
       padding:10px 10px;
@@ -94,69 +197,78 @@
       font-size:13px;
       background:#fff;
     }
-    .table th{background:#fff7ef; font-weight:700; color:#3b2a1f}
-    .table tr:last-child td{border-bottom:none}
-    .tag{
-      display:inline-block; padding:2px 8px; border-radius:999px;
-      font-size:12px; border:1px solid var(--line); color:var(--muted); background:#fff;
-      margin-right:6px; margin-top:4px;
-    }
-    details{
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#fff;
-      padding:10px 12px;
-      margin-top:10px;
-    }
-    summary{
-      cursor:pointer;
+    .table th{
+      background:#fff7ef;
       font-weight:700;
       color:#3b2a1f;
-      list-style:none;
     }
-    summary::-webkit-details-marker{display:none}
-    .hint{color:var(--muted); font-size:12px; margin:8px 0 0}
-    .list{margin:8px 0 0; padding-left:18px; color:#2a2a2a; font-size:13px}
+    .table tr:last-child td{border-bottom:none}
+
+    .tag{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:#fff;
+      margin-right:6px;
+      margin-top:4px;
+    }
+
+    .list{
+      margin:8px 0 0;
+      padding-left:18px;
+      color:#2a2a2a;
+      font-size:13px;
+    }
     .list li{margin:4px 0}
-    .footer{
-      margin-top:14px; color:var(--muted); font-size:12px; text-align:center;
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      margin:8px 0 0;
     }
-    @media print{
-      body{background:#fff}
-      header, .card{box-shadow:none}
-      .printbar{display:none}
-      details{break-inside:avoid}
-      .card{break-inside:avoid}
+
+    .footer{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-title">流程頁｜預設手機閱覽</div>
+      <div class="view-switch">
+        <button class="view-btn active" id="mobileBtn" type="button">手機閱覽</button>
+        <button class="view-btn" id="desktopBtn" type="button">電腦閱覽</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page mobile-view" id="page">
 
     <header>
       <h1>春酒團康｜流程大綱</h1>
-      <p class="sub">用餐時間：18:00–21:30｜室內海鮮餐廳｜約40人（4桌×10人）｜桌隊積分＋兩大主遊戲＋壓軸結算與亂數紅包抽獎</p>
-
-      <div class="printbar">
-        <button onclick="window.print()">列印 / 存成 PDF</button>
-        <button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">全部展開</button>
-        <button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">全部收合</button>
-      </div>
+      <p class="sub">用餐時間：18:00–21:30｜室內海鮮餐廳｜約40人｜預計 3–4 桌｜桌隊積分＋壓軸結算與亂數紅包抽獎</p>
 
       <div class="pillrow">
-        <span class="pill"><span class="dot"></span>座位編號參與（每桌指定號碼上場）</span>
-        <span class="pill"><span class="dot"></span>代替或重複上台：該項獎金減半</span>
-        <span class="pill"><span class="dot"></span>秘密小任務：全桌可協助，桌長回報</span>
-        <span class="pill"><span class="dot"></span>20:30–21:30 壓軸：獎金池結算＋亂數紅包抽獎</span>
+        <span class="pill"><span class="dot"></span>幸運號碼參與</span>
+        <span class="pill"><span class="dot"></span>團隊任務回報</span>
+        <span class="pill"><span class="dot"></span>20:30–21:30 壓軸結算＋抽獎</span>
+        <span class="pill"><span class="dot"></span>後台流程使用版本</span>
       </div>
     </header>
 
-    <div class="grid">
+    <div class="grid two-col">
       <section class="card">
         <h2>一、活動方向 可回報重點</h2>
 
-        <div class="kvs">
+        <div class="kvs two">
           <div class="kv">
             <b>活動主軸</b>
             <div class="lines">
@@ -170,7 +282,7 @@
             <b>互動設計</b>
             <div class="lines">
               <div>桌隊參與為主</div>
-              <div>座位編號指定上場</div>
+              <div>幸運號碼指定參與</div>
               <div>降低個人壓力</div>
             </div>
           </div>
@@ -194,24 +306,11 @@
           </div>
         </div>
 
-        <details>
-          <summary>座位編號參與規則</summary>
-          <ul class="list">
-            <li>每桌座位編號 1–10（由桌長快速分配或依座位順序）。</li>
-            <li>活動參與以「每桌指定幾個號碼」上場/作答為主。</li>
-            <li><b>代替或重複上台</b>：該項獎金減半，鼓勵輪替與公平。</li>
-            <li>主持只點「桌號＋座位編號」，不直接點名個人。</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>內向友善主持口訣</summary>
-          <ul class="list">
-            <li>題型以二選一為主（O/X、A/B），避免開放式冷場。</li>
-            <li>集體動作取代個人發言：全場一起比手勢/舉杯/拍手。</li>
-            <li>上菜優先，活動可暫停再接回，不硬推流程。</li>
-          </ul>
-        </details>
+        <ul class="list" style="margin-top:10px;">
+          <li>活動參與以桌隊合作與幸運號碼指定為主。</li>
+          <li>代替或重複上台之獎金處理，依當日規則公告執行。</li>
+          <li>上菜優先，活動可視現場節奏微調速度。</li>
+        </ul>
       </section>
 
       <aside class="card">
@@ -219,30 +318,19 @@
 
         <div class="mini">
           <span class="badge good"><span class="dot"></span>麥克風</span>
-          <span class="badge good"><span class="dot"></span>手機/平板播歌</span>
+          <span class="badge good"><span class="dot"></span>手機／平板</span>
           <span class="badge good"><span class="dot"></span>計時器</span>
           <span class="badge warn"><span class="dot"></span>投影 有更好 無也可</span>
         </div>
 
-        <details open>
-          <summary>必備清單</summary>
-          <ul class="list">
-            <li>桌牌/桌號（4桌）＋桌長識別（貼紙/小卡）</li>
-            <li>座位編號卡（每桌 1–10，可用貼紙/小紙條）</li>
-            <li>秘密任務卡（只發桌長，任務需讓全桌可協助）</li>
-            <li><b>積分板</b>：白板／海報紙／投影（擇一）＋記號筆</li>
-            <li>獎項分袋：段落獎、桌隊獎、抽獎大獎（發放更順）</li>
-          </ul>
-        </details>
-
-        <details>
-          <summary>人力分工 最少配置</summary>
-          <ul class="list">
-            <li>主持人 1：流程、氣氛、控音量</li>
-            <li>活動人員 1：記分、遞麥、發獎、收任務回報、操作亂數抽獎</li>
-            <li>可加協助 1：播歌/控音量/拍照/機動支援</li>
-          </ul>
-        </details>
+        <ul class="list">
+          <li>桌牌／桌號（預計 3–4 桌）</li>
+          <li>桌長識別（貼紙／小卡）</li>
+          <li>團隊任務卡與回報方式</li>
+          <li><b>積分板</b>：白板／海報紙／投影（擇一）＋記號筆</li>
+          <li>獎項分袋：段落獎、桌隊獎、抽獎大獎</li>
+          <li>主持人 1、活動人員 1、機動協助 1（視需求）</li>
+        </ul>
       </aside>
     </div>
 
@@ -265,12 +353,12 @@
             <td><b>報到／入座前</b></td>
             <td>
               桌號確認、桌長集合<br/>
-              <span class="tag">座位編號 1–10 配置</span>
-              <span class="tag">秘密任務交付桌長</span>
+              <span class="tag">幸運號碼配置</span>
+              <span class="tag">團隊任務交付</span>
             </td>
             <td>
-              建立座位編號制度<br/>
-              任務先啟動桌內互動
+              建立分組與參與方式<br/>
+              先啟動桌內互動
             </td>
           </tr>
 
@@ -290,15 +378,15 @@
 
           <tr>
             <td>18:40–19:00</td>
-            <td><b>主遊戲① 牆頭草321站邊</b></td>
+            <td><b>主互動環節①</b></td>
             <td>
               飯前先暖身、稍微動一動<br/>
-              每桌派代表參與（可依座位編號指定）<br/>
-              O/X 站邊題
+              依當日安排進行代表參與<br/>
+              採現場規則執行
             </td>
             <td>
               快速拉起氣氛與參與感<br/>
-              段落獎：站邊王＋氣氛獎
+              段落獎發放點
             </td>
           </tr>
 
@@ -307,22 +395,22 @@
             <td><b>用餐與交流 主段一</b></td>
             <td>
               以吃飯為主、主持人輕串場<br/>
-              秘密任務持續進行中
+              團隊任務持續進行中
             </td>
             <td>讓大家先舒服吃、維持互動熱度</td>
           </tr>
 
           <tr>
             <td>19:45–20:10</td>
-            <td><b>主遊戲② 猜歌王</b></td>
+            <td><b>主互動環節②</b></td>
             <td>
-              桌隊搶答（桌長作答）<br/>
-              可經隊員討論後作答<br/>
-              每 3 題一次小獎點
+              桌隊形式進行互動<br/>
+              依當日規則執行回答與計分<br/>
+              中段安排獎勵節點
             </td>
             <td>
               中段拉高嗨度與專注度<br/>
-              段落獎：猜歌冠軍桌
+              段落獎發放點
             </td>
           </tr>
 
@@ -330,8 +418,8 @@
             <td>20:10–20:30</td>
             <td><b>用餐與交流 主段二</b></td>
             <td>
-              以用餐為主，收尾主遊戲節奏<br/>
-              開放秘密任務回報窗口與記分整理
+              以用餐為主，收尾主活動節奏<br/>
+              開放團隊任務回報窗口與記分整理
             </td>
             <td>
               銜接壓軸段前整理場面<br/>
@@ -343,7 +431,7 @@
             <td>20:30–20:45</td>
             <td><b>獎金池成績結算</b></td>
             <td>
-              秘密任務結算與加分<br/>
+              團隊任務結算與加分<br/>
               桌隊積分排名暫定<br/>
               公布今日獎金池成績（桌隊獎）
             </td>
@@ -358,7 +446,7 @@
             <td><b>亂數紅包抽獎 大獎段</b></td>
             <td>
               原機動段落調整併入抽獎時間<br/>
-              以桌號＋座位編號亂數抽出得主<br/>
+              以幸運號碼亂數抽出得主<br/>
               現金與非現金穿插，最大獎放最後
             </td>
             <td>
@@ -376,21 +464,22 @@
         </tbody>
       </table>
 
-      <p class="hint">備註：若現場節奏緊湊 → 調整遊戲速度；若上菜較慢或活動較快結束 → 部分加碼活動。非活動時間若現場有影音設備，開放唱歌加碼小活動。</p>
+      <p class="hint">備註：若現場節奏緊湊 → 調整活動速度；若上菜較慢或活動較快結束 → 部分加碼活動。非活動時間若現場有影音設備，開放唱歌加碼小活動。</p>
     </section>
 
     <section class="card" style="margin-top:14px;">
       <h2>四、壓軸一小時 20:30–21:30 的安排</h2>
 
-      <div class="kvs">
+      <div class="kvs two">
         <div class="kv">
           <b>20:30–20:45</b>
           <div class="lines">
-            <div>秘密任務結算</div>
+            <div>團隊任務結算</div>
             <div>桌隊積分結算</div>
             <div>今日獎金池成績公布與發放</div>
           </div>
         </div>
+
         <div class="kv">
           <b>20:45–21:25</b>
           <div class="lines">
@@ -399,6 +488,7 @@
             <div>最大獎最後 1–2 筆</div>
           </div>
         </div>
+
         <div class="kv">
           <b>21:25–21:30</b>
           <div class="lines">
@@ -407,25 +497,16 @@
             <div>散場引導</div>
           </div>
         </div>
+
         <div class="kv">
           <b>抽獎控場要點</b>
           <div class="lines">
-            <div>只點桌號＋座位編號</div>
+            <div>以幸運號碼為主</div>
             <div>重複中獎處理依當日規則公告</div>
-            <div>代替或重複上台：該項獎金減半</div>
+            <div>現場節奏由主持人掌握調整</div>
           </div>
         </div>
       </div>
-
-      <details>
-        <summary>抽獎口條建議（快速不卡）</summary>
-        <ul class="list">
-          <li>「我們先把今天的獎金池成績結算完，接著進入年度紅包抽獎主段。」</li>
-          <li>「抽到的桌號＋座位編號請直接舉手，工作人員會協助遞獎。」</li>
-          <li>「提醒：代替或重複上台，該項獎金減半，鼓勵大家輪流上來拿喜氣。」</li>
-          <li>「最後 1–2 筆是今晚最大獎，我們放在最後抽。」</li>
-        </ul>
-      </details>
     </section>
 
     <div class="footer">
@@ -433,5 +514,28 @@
     </div>
 
   </div>
+
+  <script>
+    const page = document.getElementById('page');
+    const mobileBtn = document.getElementById('mobileBtn');
+    const desktopBtn = document.getElementById('desktopBtn');
+
+    function setView(mode){
+      if(mode === 'desktop'){
+        page.classList.remove('mobile-view');
+        page.classList.add('desktop-view');
+        desktopBtn.classList.add('active');
+        mobileBtn.classList.remove('active');
+      } else {
+        page.classList.remove('desktop-view');
+        page.classList.add('mobile-view');
+        mobileBtn.classList.add('active');
+        desktopBtn.classList.remove('active');
+      }
+    }
+
+    mobileBtn.addEventListener('click', () => setView('mobile'));
+    desktopBtn.addEventListener('click', () => setView('desktop'));
+  </script>
 </body>
 </html>
