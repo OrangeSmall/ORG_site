@@ -194,7 +194,9 @@
         let completedItems = 0;
         let currentUser = null;
         let useFirebase = false; // 判斷是否成功啟用雲端同步
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // 給外部網站使用的一個固定 appId，避免未定義錯誤
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'spring-banquet-app-2024'; 
 
         // 1. 【優先渲染畫面】確保即使網路有問題，畫面也絕對不會空白
         function renderChecklist() {
@@ -258,12 +260,28 @@
         // --- 執行初始化渲染 ---
         renderChecklist();
 
-        // 2. 【安全載入 Firebase】使用 try-catch 防止缺少 Config 導致全盤崩潰
+        // 2. 【安全載入 Firebase】
         let db, auth;
         try {
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            // =========================================================================
+            // 👇 如果您要將此網頁放到自己的網站 (如 GitHub Pages)，請在此處貼上您的 Firebase 設定
+            // =========================================================================
+            const myFirebaseConfig = {
+                apiKey: "AIzaSyAT9nmcxVI-1J4pTXMhvfXmFzYJlaQR3HM",
+                authDomain: "my-leave-calendar-50cfa.firebaseapp.com",
+                projectId: "my-leave-calendar-50cfa",
+                storageBucket: "my-leave-calendar-50cfa.firebasestorage.app",
+                messagingSenderId: "37489112070",
+                appId: "1:37489112070:web:3d68bb273b7ac438297f87"
+            };
+
+            const isUsingCustomConfig = Object.keys(myFirebaseConfig).length > 0;
+            // 系統會優先使用您上方填寫的設定，若無則嘗試讀取 AI 環境變數
+            const firebaseConfig = isUsingCustomConfig 
+                ? myFirebaseConfig 
+                : (typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {});
             
-            // 確保設定檔不是空的才初始化
+            // 確保設定檔不是空的才進行初始化連線
             if (Object.keys(firebaseConfig).length > 0) {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -273,13 +291,16 @@
                 // 啟動登入驗證
                 const initAuth = async () => {
                     try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        // 如果有自訂設定檔，代表無法使用預設環境的 token，直接採取匿名登入
+                        if (!isUsingCustomConfig && typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             await signInWithCustomToken(auth, __initial_auth_token);
                         } else {
+                            // 外部網站沒有 Custom Token 或使用的是您自己的 Firebase Config，直接使用匿名登入
+                            // ⚠️ 注意：您必須在 Firebase Console 中啟用「匿名登入 (Anonymous)」
                             await signInAnonymously(auth);
                         }
                     } catch (error) {
-                        console.error("Auth error, falling back to local mode.");
+                        console.error("驗證失敗，退回單機模式:", error);
                         enableLocalMode();
                     }
                 };
@@ -292,11 +313,11 @@
                     }
                 });
             } else {
-                // Config 為空，進入單機模式
+                // 如果 myFirebaseConfig 和環境變數都是空的，進入單機模式
                 enableLocalMode();
             }
         } catch (error) {
-            console.error("Firebase Init Failed:", error);
+            console.error("Firebase 初始化失敗:", error);
             enableLocalMode();
         }
 
@@ -305,7 +326,7 @@
             useFirebase = false;
             document.getElementById('sync-status').innerHTML = '⚠️ 單機模式';
             document.getElementById('sync-status').className = "flex-shrink-0 flex items-center gap-1 text-[11px] font-bold text-gray-700 bg-gray-200 px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm mt-1";
-            document.getElementById('footer-status-msg').innerHTML = '⚠️ 目前為單機模式，進度僅儲存於您的瀏覽器中';
+            document.getElementById('footer-status-msg').innerHTML = '⚠️ 目前為單機模式，進度僅暫存於您的瀏覽器中';
             document.getElementById('footer-status-msg').className = 'mt-2 text-gray-500 font-medium flex items-center justify-center gap-1';
             
             // 重新計算本地存取進度
@@ -346,7 +367,7 @@
                     updateProgressUI();
                 }
             }, (error) => {
-                console.error("Sync error:", error);
+                console.error("同步發生錯誤:", error);
                 enableLocalMode();
             });
         }
@@ -383,7 +404,7 @@
                         lastUpdated: new Date().toISOString()
                     }, { merge: true });
                 } catch (e) {
-                    console.error("Save error:", e);
+                    console.error("資料寫入錯誤:", e);
                 }
             }
         };
