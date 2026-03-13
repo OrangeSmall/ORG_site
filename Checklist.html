@@ -50,6 +50,25 @@
             body.force-desktop #app-container { margin: 2rem auto; border-radius: 1rem; }
         }
         body.force-desktop #checklist-container { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+        /* 解決介面切換時的排版跑位與溢出問題 */
+        /* 手機版強制覆蓋 (針對在大螢幕上點選「手機版」) */
+        body.force-mobile .header-pad { padding: 1.25rem !important; }
+        body.force-mobile .header-layout { flex-direction: column !important; align-items: flex-start !important; }
+        body.force-mobile .header-title { font-size: 1.5rem !important; line-height: 2rem !important; }
+        body.force-mobile .header-subtitle { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+        body.force-mobile .header-controls { width: 100% !important; margin-top: 1rem !important; align-items: stretch !important; }
+        body.force-mobile .header-btn-group { width: 100% !important; }
+        body.force-mobile .header-export-btn { width: 100% !important; font-size: 0.875rem !important; line-height: 1.25rem !important; }
+
+        /* 電腦版強制覆蓋 (針對在小螢幕上點選「電腦版」) */
+        body.force-desktop .header-pad { padding: 2rem !important; }
+        body.force-desktop .header-layout { flex-direction: row !important; align-items: center !important; }
+        body.force-desktop .header-title { font-size: 2.25rem !important; line-height: 2.5rem !important; }
+        body.force-desktop .header-subtitle { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+        body.force-desktop .header-controls { width: auto !important; margin-top: 0 !important; align-items: flex-end !important; }
+        body.force-desktop .header-btn-group { width: auto !important; }
+        body.force-desktop .header-export-btn { width: auto !important; font-size: 1rem !important; line-height: 1.5rem !important; }
     </style>
 </head>
 <body class="md:p-8 p-0 bg-gray-100 min-h-screen">
@@ -57,11 +76,11 @@
     <div id="app-container" class="max-w-6xl mx-auto bg-white md:rounded-2xl shadow-xl overflow-hidden min-h-screen md:min-h-0">
         
         <!-- Sticky Header (手機版固定於頂部方便檢視進度) -->
-        <header class="bg-gradient-to-r from-orange-500 to-red-500 p-5 md:p-8 text-white sticky top-0 z-50 shadow-md">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="bg-gradient-to-r from-orange-500 to-red-500 p-5 md:p-8 text-white sticky top-0 z-50 shadow-md header-pad">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 header-layout">
                 <div class="w-full">
-                    <div class="flex justify-between items-start w-full">
-                        <h1 class="text-2xl md:text-4xl font-black mb-1 tracking-wide leading-tight">春酒活動準備清單</h1>
+                    <div class="flex flex-wrap justify-between items-start w-full gap-2">
+                        <h1 class="text-2xl md:text-4xl font-black mb-1 tracking-wide leading-tight header-title">春酒活動準備清單</h1>
                         <!-- 同步狀態指示燈 -->
                         <div id="sync-status" class="flex items-center gap-2 text-xs font-medium text-orange-100 bg-black/20 px-3 py-1.5 rounded-full whitespace-nowrap">
                             <svg class="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -71,20 +90,19 @@
                             連線中...
                         </div>
                     </div>
-                    <p class="text-orange-100 font-medium text-sm md:text-lg mt-1">團隊雲端交接版 ｜ 流程基準 17:50–21:30</p>
+                    <p class="text-orange-100 font-medium text-sm md:text-lg mt-1 header-subtitle">團隊雲端交接版 ｜ 流程基準 17:50–21:30</p>
                 </div>
                 
                 <!-- 控制區塊：切換視圖與匯出 -->
-                <div class="flex flex-col items-end gap-2 w-full md:w-auto mt-4 md:mt-0">
-                    <!-- 介面切換按鈕群 -->
-                    <div class="hide-on-export flex bg-black/25 rounded-lg p-1 w-full md:w-auto justify-between shadow-inner">
-                        <button onclick="window.setView('auto')" id="btn-view-auto" class="flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5">🔄 自適應</button>
-                        <button onclick="window.setView('mobile')" id="btn-view-mobile" class="flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5">📱 手機版</button>
-                        <button onclick="window.setView('desktop')" id="btn-view-desktop" class="flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5">💻 電腦版</button>
+                <div class="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto mt-4 md:mt-0 header-controls">
+                    <!-- 介面切換按鈕群 (僅保留手機與電腦) -->
+                    <div class="hide-on-export flex bg-black/25 rounded-lg p-1 w-full md:w-auto justify-between shadow-inner gap-1 header-btn-group">
+                        <button onclick="window.setView('mobile')" id="btn-view-mobile" class="flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5">📱 手機版</button>
+                        <button onclick="window.setView('desktop')" id="btn-view-desktop" class="flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5">💻 電腦版</button>
                     </div>
                     
                     <!-- 導出按鈕 (手機版自動填滿寬度) -->
-                    <button id="exportBtn" onclick="window.exportToPNG()" class="hide-on-export w-full md:w-auto justify-center bg-white text-orange-600 hover:bg-orange-50 px-5 py-2.5 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex items-center gap-2 text-sm md:text-base">
+                    <button id="exportBtn" onclick="window.exportToPNG()" class="hide-on-export w-full md:w-auto justify-center bg-white text-orange-600 hover:bg-orange-50 px-5 py-2.5 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex items-center gap-2 text-sm md:text-base header-export-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -109,7 +127,7 @@
 
         <!-- Footer -->
         <footer class="bg-white border-t border-gray-200 p-6 text-center text-gray-500 text-xs md:text-sm leading-relaxed">
-            <p>資料更新依據：活動規則頁與後台流程頁 (orangesmall.github.io)</p>
+            <p>資料同步以本清單內容為主（原活動規則頁面僅供流程參考）</p>
             <p class="mt-2 text-orange-500 font-medium flex items-center justify-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 此頁面支援多人線上即時同步，勾選狀態會自動上傳雲端
@@ -395,29 +413,30 @@
             const body = document.body;
             body.classList.remove('force-mobile', 'force-desktop');
             
-            const btnAuto = document.getElementById('btn-view-auto');
             const btnMobile = document.getElementById('btn-view-mobile');
             const btnDesktop = document.getElementById('btn-view-desktop');
             
-            const defaultClass = "flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5";
-            const activeClass = "flex-1 md:flex-none px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5";
+            const defaultClass = "flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5";
+            const activeClass = "flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5";
 
-            [btnAuto, btnMobile, btnDesktop].forEach(btn => btn.className = defaultClass);
+            [btnMobile, btnDesktop].forEach(btn => btn.className = defaultClass);
 
-            if (mode === 'mobile') {
-                body.classList.add('force-mobile');
-                btnMobile.className = activeClass;
-            } else if (mode === 'desktop') {
+            if (mode === 'desktop') {
                 body.classList.add('force-desktop');
                 btnDesktop.className = activeClass;
             } else {
-                btnAuto.className = activeClass;
+                // 預設切換為手機版
+                body.classList.add('force-mobile');
+                btnMobile.className = activeClass;
             }
         };
 
         // 程式進入點
         renderChecklist();
         initAuth();
+        
+        // 預設為手機操作介面
+        window.setView('mobile');
 
     </script>
 </body>
