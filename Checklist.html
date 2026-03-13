@@ -8,15 +8,80 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        
+        /* 基礎重置與預設深灰背景 (凸顯手機預覽框) */
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
+            background-color: #6b7280; 
             -webkit-tap-highlight-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease;
         }
-        /* 加大手機版觸控框 */
+
+        /* 預設為手機版介面 (Mobile-First 鎖定寬度) */
+        #app-container {
+            width: 100%;
+            max-width: 430px; /* 強制手機寬度 */
+            background-color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 2rem 0; }
+            #app-container {
+                min-height: auto;
+                height: 90vh; /* 電腦上看手機版時的高度 */
+                border-radius: 24px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+        }
+
+        /* --- 電腦版展開樣式 (點擊切換後套用) --- */
+        body.desktop-mode {
+            background-color: #f3f4f6;
+            display: block;
+            padding: 0;
+        }
+        @media (min-width: 768px) {
+            body.desktop-mode { padding: 2rem; }
+        }
+        body.desktop-mode #app-container {
+            max-width: 1152px; /* 展開為寬版 (max-w-6xl) */
+            margin: 0 auto;
+            height: auto;
+            min-height: 85vh;
+            border-radius: 16px;
+            overflow: visible;
+        }
+        body.desktop-mode #checklist-container {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 2rem;
+            padding: 2.5rem;
+        }
+        body.desktop-mode header {
+            flex-direction: row;
+            align-items: center;
+            padding: 2.5rem;
+        }
+        body.desktop-mode .header-controls {
+            width: 300px; /* 固定控制區寬度避免變形 */
+            margin-top: 0;
+        }
+
+        /* 元件樣式 */
         .checkbox-custom {
-            accent-color: #f97316; /* Tailwind orange-500 */
+            accent-color: #f97316;
             width: 1.5rem;
             height: 1.5rem;
             cursor: pointer;
@@ -26,111 +91,83 @@
             text-decoration: line-through;
             color: #9ca3af;
         }
-        /* 隱藏滾動條但保留功能 */
+        
+        /* 隱藏滾動條 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        /* 匯出時的樣式處理 */
+        /* 匯出處理 */
         .hide-on-export { display: flex !important; }
         .exporting .hide-on-export { display: none !important; }
         .exporting header { position: relative !important; border-radius: 0 !important; }
-        .exporting #app-container { border-radius: 0 !important; box-shadow: none !important; height: auto !important; overflow: visible !important; }
-        
-        /* 介面切換強制樣式 */
-        body.force-mobile { background-color: #6b7280; display: flex; justify-content: center; }
-        body.force-mobile #app-container { width: 100%; max-width: 430px !important; margin: 0 auto; }
-        @media (min-width: 768px) {
-            body.force-mobile #app-container { height: 90vh; margin-top: 5vh; border-radius: 24px; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        }
-        body.force-mobile #checklist-container { grid-template-columns: 1fr !important; }
-        body.force-desktop { overflow-x: auto; }
-        body.force-desktop #app-container { min-width: 1024px !important; margin: 0 auto; }
-        @media (min-width: 768px) {
-            body.force-desktop #app-container { margin: 2rem auto; border-radius: 1rem; }
-        }
-        body.force-desktop #checklist-container { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-
-        /* 解決介面切換時的排版跑位與溢出問題 */
-        /* 手機版強制覆蓋 (針對在大螢幕上點選「手機版」) */
-        body.force-mobile .header-pad { padding: 1.25rem !important; }
-        body.force-mobile .header-layout { flex-direction: column !important; align-items: flex-start !important; }
-        body.force-mobile .header-title { font-size: 1.5rem !important; line-height: 2rem !important; }
-        body.force-mobile .header-subtitle { font-size: 0.875rem !important; line-height: 1.25rem !important; }
-        body.force-mobile .header-controls { width: 100% !important; margin-top: 1rem !important; align-items: stretch !important; }
-        body.force-mobile .header-btn-group { width: 100% !important; }
-        body.force-mobile .header-export-btn { width: 100% !important; font-size: 0.875rem !important; line-height: 1.25rem !important; }
-
-        /* 電腦版強制覆蓋 (針對在小螢幕上點選「電腦版」) */
-        body.force-desktop .header-pad { padding: 2rem !important; }
-        body.force-desktop .header-layout { flex-direction: row !important; align-items: center !important; }
-        body.force-desktop .header-title { font-size: 2.25rem !important; line-height: 2.5rem !important; }
-        body.force-desktop .header-subtitle { font-size: 1.125rem !important; line-height: 1.75rem !important; }
-        body.force-desktop .header-controls { width: auto !important; margin-top: 0 !important; align-items: flex-end !important; }
-        body.force-desktop .header-btn-group { width: auto !important; }
-        body.force-desktop .header-export-btn { width: auto !important; font-size: 1rem !important; line-height: 1.5rem !important; }
+        .exporting #app-container { border-radius: 0 !important; box-shadow: none !important; height: auto !important; overflow: visible !important; margin: 0 !important; max-width: none !important; width: 100% !important; }
+        .exporting body.desktop-mode #app-container { max-width: 1152px !important; margin: 0 auto !important; }
+        .exporting body:not(.desktop-mode) #app-container { max-width: 430px !important; margin: 0 auto !important; }
     </style>
 </head>
-<body class="md:p-8 p-0 bg-gray-100 min-h-screen">
+<!-- 預設不加上 desktop-mode，即為純手機介面 -->
+<body>
 
-    <div id="app-container" class="max-w-6xl mx-auto bg-white md:rounded-2xl shadow-xl overflow-hidden min-h-screen md:min-h-0">
+    <div id="app-container">
         
-        <!-- Sticky Header (手機版固定於頂部方便檢視進度) -->
-        <header class="bg-gradient-to-r from-orange-500 to-red-500 p-5 md:p-8 text-white sticky top-0 z-50 shadow-md header-pad">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 header-layout">
-                <div class="w-full">
-                    <div class="flex flex-wrap justify-between items-start w-full gap-2">
-                        <h1 class="text-2xl md:text-4xl font-black mb-1 tracking-wide leading-tight header-title">春酒活動準備清單</h1>
-                        <!-- 同步狀態指示燈 -->
-                        <div id="sync-status" class="flex items-center gap-2 text-xs font-medium text-orange-100 bg-black/20 px-3 py-1.5 rounded-full whitespace-nowrap">
-                            <svg class="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            連線中...
-                        </div>
-                    </div>
-                    <p class="text-orange-100 font-medium text-sm md:text-lg mt-1 header-subtitle">團隊雲端交接版 ｜ 流程基準 17:50–21:30</p>
+        <!-- Header (預設 Flex-Col 手機排版) -->
+        <header class="bg-gradient-to-r from-orange-500 to-red-500 p-5 text-white sticky top-0 z-50 shadow-md flex flex-col gap-4 flex-shrink-0 transition-all duration-300">
+            
+            <!-- 上半部：標題與狀態 -->
+            <div class="flex justify-between items-start w-full gap-2">
+                <div class="flex-1">
+                    <h1 class="text-2xl font-black mb-1 tracking-wide leading-tight md:text-3xl">春酒活動準備清單</h1>
+                    <p class="text-orange-100 font-medium text-sm mt-1">團隊雲端交接版</p>
                 </div>
-                
-                <!-- 控制區塊：切換視圖與匯出 -->
-                <div class="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto mt-4 md:mt-0 header-controls">
-                    <!-- 介面切換按鈕群 (僅保留手機與電腦) -->
-                    <div class="hide-on-export flex bg-black/25 rounded-lg p-1 w-full md:w-auto justify-between shadow-inner gap-1 header-btn-group">
-                        <button onclick="window.setView('mobile')" id="btn-view-mobile" class="flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5">📱 手機版</button>
-                        <button onclick="window.setView('desktop')" id="btn-view-desktop" class="flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5">💻 電腦版</button>
-                    </div>
-                    
-                    <!-- 導出按鈕 (手機版自動填滿寬度) -->
-                    <button id="exportBtn" onclick="window.exportToPNG()" class="hide-on-export w-full md:w-auto justify-center bg-white text-orange-600 hover:bg-orange-50 px-5 py-2.5 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex items-center gap-2 text-sm md:text-base header-export-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        匯出當前進度圖
-                    </button>
+                <!-- 同步狀態指示燈 -->
+                <div id="sync-status" class="flex-shrink-0 flex items-center gap-1.5 text-[11px] font-bold text-orange-100 bg-black/20 px-2.5 py-1.5 rounded-full whitespace-nowrap shadow-sm mt-1">
+                    <svg class="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    載入中...
                 </div>
+            </div>
+            
+            <!-- 下半部：按鈕控制區 -->
+            <div class="flex flex-col gap-2 header-controls w-full mt-1">
+                <!-- 切換按鈕 -->
+                <div class="hide-on-export flex bg-black/25 rounded-lg p-1 w-full justify-between shadow-inner gap-1">
+                    <button onclick="window.setView('mobile')" id="btn-view-mobile" class="flex-1 px-2 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5 whitespace-nowrap">📱 手機版</button>
+                    <button onclick="window.setView('desktop')" id="btn-view-desktop" class="flex-1 px-2 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5 whitespace-nowrap">💻 電腦版</button>
+                </div>
+                <!-- 導出按鈕 (強制不換行 whitespace-nowrap) -->
+                <button id="exportBtn" onclick="window.exportToPNG()" class="hide-on-export w-full justify-center bg-white text-orange-600 hover:bg-orange-50 px-4 py-2.5 rounded-xl font-bold shadow-lg transition-transform active:scale-95 flex items-center gap-2 text-sm md:text-base whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    匯出當前進度圖
+                </button>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="mt-5 md:mt-6 bg-black/20 rounded-full h-3 md:h-4 backdrop-blur-sm p-0.5">
-                <div id="progressBar" class="bg-white h-2 md:h-3 rounded-full transition-all duration-700 ease-out" style="width: 0%;"></div>
-            </div>
-            <div class="mt-2 text-right text-xs md:text-sm font-bold text-orange-50">
-                團隊完成度: <span id="progressText" class="text-base md:text-lg">0 / 0</span> (<span id="progressPercent">0%</span>)
+            <!-- 進度條 -->
+            <div class="w-full mt-2">
+                <div class="bg-black/20 rounded-full h-3 backdrop-blur-sm p-0.5">
+                    <div id="progressBar" class="bg-white h-2 rounded-full transition-all duration-700 ease-out" style="width: 0%;"></div>
+                </div>
+                <div class="mt-2 text-right text-xs font-bold text-orange-50">
+                    完成度: <span id="progressText" class="text-base">0 / 0</span> (<span id="progressPercent">0%</span>)
+                </div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main id="checklist-container" class="p-4 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-8 bg-gray-50 pb-20">
+        <!-- Main Content (預設單欄排版) -->
+        <main id="checklist-container" class="p-5 grid grid-cols-1 gap-5 bg-gray-50 flex-1 pb-10">
             <!-- JavaScript will render content here -->
         </main>
 
         <!-- Footer -->
-        <footer class="bg-white border-t border-gray-200 p-6 text-center text-gray-500 text-xs md:text-sm leading-relaxed">
-            <p>資料同步以本清單內容為主（原活動規則頁面僅供流程參考）</p>
-            <p class="mt-2 text-orange-500 font-medium flex items-center justify-center gap-1">
+        <footer class="bg-white border-t border-gray-200 p-6 text-center text-gray-500 text-xs leading-relaxed flex-shrink-0">
+            <p>資料同步以本清單內容為主（原活動規則僅供參考）</p>
+            <p id="footer-status-msg" class="mt-2 text-orange-500 font-medium flex items-center justify-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                此頁面支援多人線上即時同步，勾選狀態會自動上傳雲端
+                支援多人線上即時同步，狀態自動上傳雲端
             </p>
         </footer>
     </div>
@@ -143,76 +180,23 @@
 
         // 資料結構定義
         const checklistData = [
-            {
-                id: "sec-1", title: "一、活動基本設定確認", description: "",
-                subsections: [{
-                    items: ["活動日期、餐廳資訊、地址、聯絡窗口確認", "活動時間確認：17:50–21:30", "用餐時段確認：18:00–21:30", "活動型態確認：聚餐為主、桌隊互動穿插進行", "預估人數確認：約 40 人", "分組確認：預計 3–4 桌", "幸運號碼名單完成分配", "桌長名單確認", "合照安排確認（收尾拍或視現場改為用餐前拍）"]
-                }]
-            },
-            {
-                id: "sec-2", title: "二、名單與分組資料", description: "",
-                subsections: [{
-                    items: ["出席名單", "請假／未參與名單", "桌次分組名單", "各桌桌長名單", "幸運號碼對應名單", "活動工作人員名單", "企業主與家人是否參與遊戲確認", "是否有部分人員無法參與遊戲（如 PT 或支援人員）確認"]
-                }]
-            },
-            {
-                id: "sec-3", title: "三、現場道具與設備", description: "流程頁快檢項目：麥克風、手機／平板、計時器、投影、桌牌／桌號、桌長識別、團隊任務卡與回報方式、積分板、記號筆、獎項分袋。可直接依此分工準備。",
-                subsections: [
-                    { subtitle: "必備設備", items: ["麥克風", "手機／平板（主持或工作人員操作用）", "計時器", "投影設備或替代方案確認", "充電線／延長線／行動電源", "備用筆與紙本紀錄工具"] },
-                    { subtitle: "桌面與辨識物", items: ["桌牌／桌號（3–4 桌）", "桌長識別貼紙或小卡", "幸運號碼標示方式", "工作人員識別方式"] },
-                    { subtitle: "計分與公告工具", items: ["積分板形式確認：白板／海報紙／投影三選一", "記號筆／白板筆", "排名即時更新方式確認"] },
-                    { subtitle: "發獎與收尾物品", items: ["獎金分袋", "桌隊獎分袋", "個人加碼紅包分袋", "頒獎名單／發放名單", "合照提醒與拍攝工具"] }
-                ]
-            },
-            {
-                id: "sec-4", title: "四、流程執行準備", description: "",
-                subsections: [
-                    { subtitle: "報到前", items: ["報到名單列印或電子版完成", "入座安排完成", "桌長集合流程確認", "幸運號碼確認流程完成", "團隊任務交付方式確認"] },
-                    { subtitle: "開場前", items: ["主持開場稿準備", "企業主發言順序確認", "活動流程講解稿準備", "現場參與方式說明準備", "結算與頒獎概念說明準備"] },
-                    { subtitle: "活動進行中", items: ["主互動環節 1 執行方案確認", "主互動環節 2 執行方案確認", "幸運號碼指定方式確認", "代表參與原則確認", "即時積分紀錄人員安排", "現場節奏調整備案確認"] },
-                    { subtitle: "收尾階段", items: ["20:40 秘密遊戲截止提醒", "停止補件與回報機制確認", "20:45–21:00 成績結算人員安排", "桌隊最終排名確認", "發獎金名單確認", "21:00–21:30 頒獎、發獎金、合照流程確認", "散場引導安排"] }
-                ]
-            },
-            {
-                id: "sec-5", title: "五、遊戲／任務內容準備", description: "",
-                subsections: [
-                    { subtitle: "1. 猜歌王", desc: "規則：每桌一組、桌上作答、由桌長回答。歌名 1 分＋歌手 1 分，先達五勝結束；若平手進入總數平分向下取整。", items: ["題庫／播放清單完成", "播放設備確認", "計分表完成", "作答判定標準給工作人員確認", "桌長回答流程說明完成", "平手時平分環節處理方式確認"] },
-                    { subtitle: "2. 牆頭草（321選邊站）", desc: "規則：現場站邊作答為主，可依場地改成舉牌作答。", items: ["題目內容完成", "站邊動線確認", "若改舉牌作答，舉牌道具完成", "現場改制判斷標準先交代給主持與人員"] },
-                    { subtitle: "3. 秘密任務", desc: "規則：拍照/說話/動作/敬酒，上傳指定雲端；預計 3–5 類型隨機配置，秘密回報系統僅有一次回報機會。", items: ["任務題庫完成", "任務類型確認（3–5 類）", "任務隨機配置方式確認", "任務卡或任務通知方式完成", "指定雲端資料夾建立", "檔案上傳規則說明完成", "秘密回報系統可正常使用", "一次回報機制測試完成", "判定人員與判定標準先確認"] }
-                ]
-            },
-            {
-                id: "sec-6", title: "六、獎金與預算準備", description: "預估預算約 50,000 元（猜歌王 14K、牆頭草 6.5K、秘密任務 20-23K 等）。桌隊獎金平分，個人紅包獨立發放，秘密任務加碼可超池。",
-                subsections: [{
-                    items: ["活動總預算確認", "猜歌王獎金分配準備", "牆頭草獎金分配準備", "秘密任務預算與加碼額度確認", "中途小遊戲預算確認", "工作人員補助確認", "現金找零／紅包袋準備", "各項獎金分袋完成", "發放紀錄表完成", "若最終未滿四組，獎金遞補方式先確認"]
-                }]
-            },
-            {
-                id: "sec-7", title: "七、加碼活動備案", description: "保留加碼：完整演唱紅包、支援前線、畫畫傳聲筒、默契大考驗、命運摸彩箱。（抽獎屬加碼活動）",
-                subsections: [{
-                    items: ["是否啟用加碼活動確認", "各加碼活動的啟動條件確認", "若啟用，對應道具是否備妥", "若啟用，額外紅包／預算是否分開準備", "主持人是否有臨場加碼話術"]
-                }]
-            },
-            {
-                id: "sec-8", title: "八、人力分工", description: "流程建議人力：主持人 1、活動人員 1、機動協助 1（視需求）。",
-                subsections: [{
-                    items: ["主持人 1 名", "活動執行 1 名", "機動協助 1 名", "積分紀錄人員", "秘密任務判定／回報審核人員", "發獎金作業人員", "拍照／活動紀錄人員", "散場與收尾整理人員"]
-                }]
-            }
+            { id: "sec-1", title: "一、活動基本設定確認", description: "", subsections: [{ items: ["活動日期、餐廳資訊、地址、聯絡窗口確認", "活動時間確認：17:50–21:30", "用餐時段確認：18:00–21:30", "活動型態確認：聚餐為主、桌隊互動穿插進行", "預估人數確認：約 40 人", "分組確認：預計 3–4 桌", "幸運號碼名單完成分配", "桌長名單確認", "合照安排確認（收尾拍或視現場改為用餐前拍）"] }] },
+            { id: "sec-2", title: "二、名單與分組資料", description: "", subsections: [{ items: ["出席名單", "請假／未參與名單", "桌次分組名單", "各桌桌長名單", "幸運號碼對應名單", "活動工作人員名單", "企業主與家人是否參與遊戲確認", "是否有部分人員無法參與遊戲（如 PT 或支援人員）確認"] }] },
+            { id: "sec-3", title: "三、現場道具與設備", description: "快檢項目：麥克風、手機／平板、計時器、投影、桌牌、識別、任務卡、積分板、記號筆、分袋。", subsections: [ { subtitle: "必備設備", items: ["麥克風", "手機／平板（操作用）", "計時器", "投影設備或替代方案確認", "充電線／行動電源", "備用筆與紙本紀錄"] }, { subtitle: "桌面與辨識物", items: ["桌牌／桌號（3–4 桌）", "桌長識別貼紙或小卡", "幸運號碼標示方式", "工作人員識別方式"] }, { subtitle: "計分與公告", items: ["積分板形式：白板／海報／投影", "記號筆／白板筆", "排名即時更新方式確認"] }, { subtitle: "發獎與收尾", items: ["獎金分袋", "桌隊獎分袋", "個人加碼紅包分袋", "頒獎名單", "合照提醒與工具"] } ] },
+            { id: "sec-4", title: "四、流程執行準備", description: "", subsections: [ { subtitle: "報到前", items: ["報到名單完成", "入座安排完成", "桌長集合確認", "幸運號碼確認", "團隊任務交付確認"] }, { subtitle: "開場前", items: ["主持開場稿", "企業主發言順序", "活動流程講解稿", "現場參與方式說明", "結算與頒獎說明"] }, { subtitle: "進行中", items: ["主互動 1 執行方案", "主互動 2 執行方案", "幸運號碼指定方式", "代表參與原則", "即時積分紀錄人員", "現場節奏調整備案"] }, { subtitle: "收尾階段", items: ["20:40 秘密遊戲截止提醒", "停止回報機制確認", "成績結算人員安排", "桌隊最終排名", "發獎金名單", "21:00 頒獎與合照流程", "散場引導"] } ] },
+            { id: "sec-5", title: "五、遊戲／任務內容準備", description: "", subsections: [ { subtitle: "1. 猜歌王", desc: "每桌一組、桌上作答、桌長回答。先達五勝結束；平手進入總數平分。", items: ["題庫／播放清單", "播放設備確認", "計分表完成", "判定標準確認", "流程說明完成", "平手處理確認"] }, { subtitle: "2. 牆頭草", desc: "站邊作答為主，可依場地改成舉牌作答。", items: ["題目內容完成", "站邊動線確認", "若改舉牌，道具完成", "判斷標準交代"] }, { subtitle: "3. 秘密任務", desc: "拍照/動作等，上傳雲端；預計 3–5 類型隨機配置，秘密系統僅一次機會。", items: ["任務題庫完成", "類型確認（3–5類）", "隨機配置方式", "通知方式完成", "雲端資料夾建立", "上傳規則說明", "系統可正常使用", "回報機制測試", "判定人員與標準確認"] } ] },
+            { id: "sec-6", title: "六、獎金與預算準備", description: "預估約 50,000 元。桌隊獎金平分，個人紅包獨立發放。", subsections: [{ items: ["活動總預算確認", "猜歌王獎金分配", "牆頭草獎金分配", "秘密任務與加碼額度", "中途遊戲預算", "工作人員補助", "現金找零／紅包袋", "各項獎金分袋", "發放紀錄表", "未滿四組遞補方式"] }] },
+            { id: "sec-7", title: "七、加碼活動備案", description: "保留加碼：完整演唱、支援前線、畫畫傳聲筒、默契大考驗、摸彩箱。", subsections: [{ items: ["是否啟用確認", "啟動條件確認", "對應道具備妥", "額外紅包／預算分開", "主持人臨場話術"] }] },
+            { id: "sec-8", title: "八、人力分工", description: "建議人力：主持人 1、活動 1、機動 1。", subsections: [{ items: ["主持人 1 名", "活動執行 1 名", "機動協助 1 名", "積分紀錄人員", "任務判定審核人員", "發獎金作業人員", "拍照紀錄人員", "散場整理人員"] }] }
         ];
 
         let totalItems = 0;
         let completedItems = 0;
         let currentUser = null;
-        
-        // Firebase Setup
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let useFirebase = false; // 判斷是否成功啟用雲端同步
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        // 1. 渲染畫面骨架
+        // 1. 【優先渲染畫面】確保即使網路有問題，畫面也絕對不會空白
         function renderChecklist() {
             const container = document.getElementById('checklist-container');
             container.innerHTML = '';
@@ -220,40 +204,43 @@
 
             checklistData.forEach((section, secIndex) => {
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6 transition-all h-fit';
+                card.className = 'bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all h-fit';
                 
-                let html = `<h2 class="text-xl md:text-2xl font-bold text-orange-600 mb-3 border-b-2 border-orange-100 pb-3 flex items-center gap-2">
-                                <span class="bg-orange-100 text-orange-600 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black">${secIndex+1}</span>
+                let html = `<h2 class="text-xl font-bold text-orange-600 mb-3 border-b-2 border-orange-100 pb-3 flex items-center gap-2 leading-snug">
+                                <span class="bg-orange-100 text-orange-600 w-7 h-7 rounded-lg flex items-center justify-center text-sm font-black flex-shrink-0">${secIndex+1}</span>
                                 ${section.title.replace(/^([一二三四五六七八]、)/, '')}
                             </h2>`;
                 
                 if (section.description) {
-                    html += `<p class="text-sm text-gray-600 mb-4 bg-orange-50/70 p-3 rounded-xl leading-relaxed border border-orange-100/50">${section.description}</p>`;
+                    html += `<p class="text-xs text-gray-600 mb-4 bg-orange-50/70 p-3 rounded-xl leading-relaxed border border-orange-100/50">${section.description}</p>`;
                 }
 
                 section.subsections.forEach((sub, subIndex) => {
                     if (sub.subtitle) {
-                        html += `<h3 class="font-bold text-gray-800 mt-5 mb-2.5 flex items-center gap-2 text-base md:text-lg">
+                        html += `<h3 class="font-bold text-gray-800 mt-5 mb-2.5 flex items-center gap-2 text-base">
                                     <span class="w-1.5 h-4 bg-orange-400 rounded-full inline-block"></span>
                                     ${sub.subtitle}
                                  </h3>`;
                     }
                     if (sub.desc) {
-                        html += `<p class="text-xs md:text-sm text-gray-500 mb-3 bg-gray-50 p-2.5 rounded-lg border-l-4 border-gray-300 leading-relaxed">${sub.desc}</p>`;
+                        html += `<p class="text-[11px] text-gray-500 mb-3 bg-gray-50 p-2.5 rounded-lg border-l-4 border-gray-300 leading-relaxed">${sub.desc}</p>`;
                     }
 
-                    html += `<ul class="space-y-1.5 md:space-y-2">`;
+                    html += `<ul class="space-y-1.5">`;
                     
                     sub.items.forEach((item, itemIndex) => {
                         const itemId = `chk_${secIndex}_${subIndex}_${itemIndex}`;
                         totalItems++;
 
+                        // 預先檢查 localStorage (作為離線模式的基底)
+                        const isCheckedLocal = localStorage.getItem(itemId) === 'true';
+
                         html += `
-                            <li class="flex items-start gap-3.5 p-3 hover:bg-orange-50/50 rounded-xl transition-colors group active:bg-orange-50">
+                            <li class="flex items-start gap-3.5 p-2.5 hover:bg-orange-50/50 rounded-xl transition-colors group active:bg-orange-50">
                                 <div class="flex items-center h-6 mt-0.5">
-                                    <input type="checkbox" id="${itemId}" class="checkbox-custom flex-shrink-0" onchange="window.handleCheck('${itemId}')">
+                                    <input type="checkbox" id="${itemId}" class="checkbox-custom flex-shrink-0" ${isCheckedLocal ? 'checked' : ''} onchange="window.handleCheck('${itemId}')">
                                 </div>
-                                <label for="${itemId}" class="cursor-pointer text-gray-700 md:text-base text-[15px] leading-snug select-none w-full transition-colors group-hover:text-orange-600 pt-0.5">
+                                <label for="${itemId}" class="cursor-pointer text-gray-700 text-[15px] leading-snug select-none w-full transition-colors ${isCheckedLocal ? 'item-checked' : 'group-hover:text-orange-600'} pt-0.5">
                                     ${item}
                                 </label>
                             </li>
@@ -268,69 +255,99 @@
             updateProgressUI();
         }
 
-        // 2. Firebase 認證與狀態監聽
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth init error:", error);
-            }
-        };
+        // --- 執行初始化渲染 ---
+        renderChecklist();
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                setupRealtimeSync();
+        // 2. 【安全載入 Firebase】使用 try-catch 防止缺少 Config 導致全盤崩潰
+        let db, auth;
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+            
+            // 確保設定檔不是空的才初始化
+            if (Object.keys(firebaseConfig).length > 0) {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                useFirebase = true;
+                
+                // 啟動登入驗證
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Auth error, falling back to local mode.");
+                        enableLocalMode();
+                    }
+                };
+                initAuth();
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        setupRealtimeSync();
+                    }
+                });
+            } else {
+                // Config 為空，進入單機模式
+                enableLocalMode();
             }
-        });
+        } catch (error) {
+            console.error("Firebase Init Failed:", error);
+            enableLocalMode();
+        }
+
+        // 單機備用模式 UI 處理
+        function enableLocalMode() {
+            useFirebase = false;
+            document.getElementById('sync-status').innerHTML = '⚠️ 單機模式';
+            document.getElementById('sync-status').className = "flex-shrink-0 flex items-center gap-1 text-[11px] font-bold text-gray-700 bg-gray-200 px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm mt-1";
+            document.getElementById('footer-status-msg').innerHTML = '⚠️ 目前為單機模式，進度僅儲存於您的瀏覽器中';
+            document.getElementById('footer-status-msg').className = 'mt-2 text-gray-500 font-medium flex items-center justify-center gap-1';
+            
+            // 重新計算本地存取進度
+            completedItems = document.querySelectorAll('.checkbox-custom:checked').length;
+            updateProgressUI();
+        }
 
         // 3. 雲端即時同步
         function setupRealtimeSync() {
-            // 使用共用路徑達到團隊同步效果
+            if (!useFirebase || !db) return;
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'team_checklist', 'shared_state');
             
             onSnapshot(docRef, (docSnap) => {
-                // 更新連線狀態 UI
-                document.getElementById('sync-status').innerHTML = '<span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span> <span class="ml-1">雲端已同步</span>';
-                document.getElementById('sync-status').className = "flex items-center text-xs font-bold text-green-800 bg-green-100 px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm";
+                document.getElementById('sync-status').innerHTML = '<span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span></span> 雲端同步中';
+                document.getElementById('sync-status').className = "flex-shrink-0 flex items-center gap-1.5 text-[11px] font-bold text-green-800 bg-green-100 px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm mt-1 border border-green-200";
 
                 if (docSnap.exists()) {
                     const states = docSnap.data().states || {};
-                    completedItems = 0;
-
-                    // 依據雲端資料更新本機畫面
                     for (let i = 1; i <= totalItems; i++) {
-                        // 尋找所有的 checkbox
                         const checkboxes = document.querySelectorAll('.checkbox-custom');
                         checkboxes.forEach(checkbox => {
                             const id = checkbox.id;
-                            const isChecked = !!states[id];
+                            // 若雲端無資料，則以本地為主上傳；若雲端有資料，則以雲端為主
+                            const isChecked = states.hasOwnProperty(id) ? !!states[id] : (localStorage.getItem(id) === 'true');
                             const label = document.querySelector(`label[for="${id}"]`);
                             
                             checkbox.checked = isChecked;
-                            
                             if (isChecked) {
                                 label.classList.add('item-checked');
                                 label.classList.remove('group-hover:text-orange-600');
-                                completedItems++;
                             } else {
                                 label.classList.remove('item-checked');
                                 label.classList.add('group-hover:text-orange-600');
                             }
                         });
                     }
-                    // 因為迴圈計算方式為避免重複疊加，重構計算邏輯：
                     completedItems = Object.values(states).filter(v => v === true).length;
                     updateProgressUI();
                 }
             }, (error) => {
                 console.error("Sync error:", error);
-                document.getElementById('sync-status').innerHTML = '⚠️ 離線狀態';
-                document.getElementById('sync-status').className = "flex items-center text-xs font-bold text-red-800 bg-red-100 px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm";
+                enableLocalMode();
             });
         }
 
@@ -339,18 +356,26 @@
             const checkbox = document.getElementById(id);
             const isChecked = checkbox.checked;
             
-            // 先做本機視覺更新 (Optimistic UI)
+            // 本機視覺更新與 LocalStorage 備份
             const label = document.querySelector(`label[for="${id}"]`);
             if (isChecked) {
                 label.classList.add('item-checked');
                 label.classList.remove('group-hover:text-orange-600');
+                localStorage.setItem(id, 'true');
             } else {
                 label.classList.remove('item-checked');
                 label.classList.add('group-hover:text-orange-600');
+                localStorage.setItem(id, 'false');
             }
 
-            // 寫入 Firebase (使用 merge 避免覆蓋其他人勾選的項目)
-            if (currentUser) {
+            if (!useFirebase) {
+                completedItems = document.querySelectorAll('.checkbox-custom:checked').length;
+                updateProgressUI();
+                return;
+            }
+
+            // 寫入 Firebase
+            if (currentUser && useFirebase) {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'team_checklist', 'shared_state');
                 try {
                     await setDoc(docRef, { 
@@ -365,33 +390,29 @@
 
         // 5. 更新進度條 UI
         function updateProgressUI() {
-            // 防呆處理
             if(completedItems > totalItems) completedItems = totalItems;
             const percent = totalItems === 0 ? 0 : Math.round((completedItems / totalItems) * 100);
-            
             document.getElementById('progressBar').style.width = `${percent}%`;
             document.getElementById('progressText').innerText = `${completedItems} / ${totalItems}`;
             document.getElementById('progressPercent').innerText = `${percent}%`;
         }
 
-        // 6. PNG 導出功能 (會議記錄產出用)
+        // 6. PNG 導出功能
         window.exportToPNG = function() {
             const appContainer = document.getElementById('app-container');
             const btn = document.getElementById('exportBtn');
             const originalText = btn.innerHTML;
             
             btn.innerHTML = '產出中...請稍候';
-            appContainer.classList.add('exporting');
+            document.body.classList.add('exporting');
             
-            // 加入稍微延遲確保 UI 已切換為導出狀態
             setTimeout(() => {
                 html2canvas(appContainer, {
                     scale: 2, 
                     useCORS: true,
-                    backgroundColor: "#f3f4f6",
-                    windowWidth: document.documentElement.offsetWidth, // 確保以電腦版寬度渲染，避免手機版排版過長
+                    backgroundColor: "#ffffff", // 強制匯出時為純白背景，畫面更乾淨
                 }).then(canvas => {
-                    appContainer.classList.remove('exporting');
+                    document.body.classList.remove('exporting');
                     btn.innerHTML = originalText;
 
                     const link = document.createElement('a');
@@ -402,7 +423,7 @@
                 }).catch(err => {
                     console.error("導出圖片失敗:", err);
                     alert("導出圖片時發生錯誤。");
-                    appContainer.classList.remove('exporting');
+                    document.body.classList.remove('exporting');
                     btn.innerHTML = originalText;
                 });
             }, 300);
@@ -411,32 +432,25 @@
         // 7. 介面切換功能
         window.setView = function(mode) {
             const body = document.body;
-            body.classList.remove('force-mobile', 'force-desktop');
-            
             const btnMobile = document.getElementById('btn-view-mobile');
             const btnDesktop = document.getElementById('btn-view-desktop');
             
-            const defaultClass = "flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5";
-            const activeClass = "flex-1 md:flex-none px-4 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5";
-
-            [btnMobile, btnDesktop].forEach(btn => btn.className = defaultClass);
+            const defaultClass = "flex-1 px-2 py-1.5 text-sm rounded-md transition-all text-white hover:bg-white/20 flex justify-center items-center gap-1.5 whitespace-nowrap";
+            const activeClass = "flex-1 px-2 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5 whitespace-nowrap";
 
             if (mode === 'desktop') {
-                body.classList.add('force-desktop');
+                body.classList.add('desktop-mode');
                 btnDesktop.className = activeClass;
+                btnMobile.className = defaultClass;
             } else {
-                // 預設切換為手機版
-                body.classList.add('force-mobile');
+                body.classList.remove('desktop-mode');
                 btnMobile.className = activeClass;
+                btnDesktop.className = defaultClass;
             }
         };
 
-        // 程式進入點
-        renderChecklist();
-        initAuth();
-        
-        // 預設為手機操作介面
-        window.setView('mobile');
+        // 預設選中「手機版」狀態樣式
+        document.getElementById('btn-view-mobile').className = "flex-1 px-2 py-1.5 text-sm rounded-md transition-all bg-white text-orange-600 font-bold shadow flex justify-center items-center gap-1.5 whitespace-nowrap";
 
     </script>
 </body>
