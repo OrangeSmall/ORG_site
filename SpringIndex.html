@@ -220,6 +220,7 @@
     .i6 { background: linear-gradient(135deg, #ffe29a, #fff4cc); }
     .i7 { background: linear-gradient(135deg, #bde0fe, #e3f2ff); } /* 電腦 */
     .i8 { background: linear-gradient(135deg, #d0f4de, #ecfff3); } /* 音符 */
+    .i9 { background: linear-gradient(135deg, #fde68a, #fff7cc); } /* 繪卷 */
 
     .content { min-width: 0; flex: 1; }
     .title { font-size: 16px; font-weight: 800; line-height: 1.3; margin: 0; word-break: break-word; }
@@ -434,7 +435,16 @@
         </div>
         <div class="arrow">›</div>
       </a>
-
+      
+<a class="card-link" id="guessScrollBtn" href="https://guess-song-2026.vercel.app/" target="_blank" rel="noopener">
+  <div class="icon i9">📜</div>
+  <div class="content">
+    <p class="title">猜歌繪卷</p>
+    <p class="desc">猜歌王後台系統</p>
+  </div>
+  <div class="arrow">›</div>
+</a>
+      
       <a class="card-link" href="https://script.google.com/macros/s/AKfycbx7DZ_3C6oavbYsoU0IK6qBojSwKQuk2DhRpCed9OZQtEgRzRocYiebWus3sHx3diU/exec" target="_blank" rel="noopener">
         <div class="icon i7">💻</div>
         <div class="content">
@@ -554,5 +564,37 @@
       });
     })();
   </script>
+
+  <script>
+  (function () {
+    const URL = "https://guess-song-2026.vercel.app/";
+    const PASSWORD = "790704"; // 二次密碼
+    const KEY = "guess_scroll_unlock_v1"; // 記住本次分頁
+
+    const btn = document.getElementById("guessScrollBtn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const alreadyUnlocked = sessionStorage.getItem(KEY) === "ok";
+      const openLink = () => window.open(URL, "_blank", "noopener");
+
+      if (alreadyUnlocked) {
+        openLink();
+        return;
+      }
+
+      const input = prompt("猜歌繪卷｜請輸入密碼：");
+      if ((input || "").trim() === PASSWORD) {
+        sessionStorage.setItem(KEY, "ok"); // 若你想每次都要輸入，把這行刪掉即可
+        openLink();
+      } else {
+        alert("密碼錯誤，無法開啟。");
+      }
+    });
+  })();
+</script>
+  
 </body>
 </html>
